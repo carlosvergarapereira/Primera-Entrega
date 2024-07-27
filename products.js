@@ -1,0 +1,33 @@
+export const products = [
+
+    {
+        id:1,
+        title:'Estufa',
+        description:'Gas',
+        code:'A001',
+        price:150,
+        status:true,
+        stock:10,
+        category:'Hogar'
+    },
+    {
+        id:2,
+        title:'Termoventilador',
+        description:'Electrico',
+        code:'A002',
+        price:25,
+        status:true,
+        stock:5,
+        category:'Hogar'
+    },
+    {
+        id:3,
+        title:'Tijeras',
+        description:'Herramientas',
+        code:'A003',
+        price:10,
+        status:true,
+        stock:15,
+        category:'Jardin'
+    }
+];
