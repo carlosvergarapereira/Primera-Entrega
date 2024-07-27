@@ -180,27 +180,6 @@ function getMaxCartsId(carts) {
   });
 
 
-//   app.post('/api/carts/:cid/product/:pid', (req, res) => {
-//     const cartId = req.params.cid;
-//     const productId = req.params.pid;
-  
-//     const cart = carts.find(c => c.id === +cartId);
-//     console.log(cart);
-//     if (!cart) {
-//       return res.status(404).json({ message: 'No existe el carrito con ese ID' });
-//     }
-  
-//     const product = cart.products.find(p => p.id === +productId);
-//     if (!product) {
-//       return res.status(404).json({ message: 'No existe el producto con ese ID' });
-//     }
-  
-//     const newItem = { ...product };
-//     cart.products.push(newItem);
-  
-//     res.json({ message: 'Nuevo item agregado al carrito', cart });
-//   });
-
 
 //Metodo Get 
 

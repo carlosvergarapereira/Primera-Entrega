@@ -7,7 +7,10 @@ export const products = [
         price:150,
         status:true,
         stock:10,
-        category:'Hogar'
+        category:'Hogar',
+        thumbnails: [
+            "https://s.libertaddigital.com/2021/01/08/estufa-de-gas-butano-de-llama-azul-orbegozo-hbf100.jpg",
+          ]
     },
     {
         id:2,
@@ -17,7 +20,10 @@ export const products = [
         price:25,
         status:true,
         stock:5,
-        category:'Hogar'
+        category:'Hogar',
+        thumbnails: [
+            "https://www.abcdin.cl/dw/image/v2/BCPP_PRD/on/demandware.static/-/Sites-master-catalog/default/dw1a7d9fc6/images/large/19527760.jpg?sw=1200&sh=1200&sm=fit",
+          ]
     },
     {
         id:3,
@@ -27,6 +33,9 @@ export const products = [
         price:10,
         status:true,
         stock:15,
-        category:'Jardin'
+        category:'Jardin',
+        thumbnails: [
+            "https://cdnx.jumpseller.com/comercial-luckymaq/image/29482259/TIJERA_PODA_ERGO_MANGO_FIJO_M3_PROFESIONAL_PX-M3_BAHCO.webp?1668603084",
+          ]
     }
 ];
