@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Productos en Tiempo Real</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const socket = io();
+            const productList = document.getElementById('product-list');
+
+            // Actualizar la lista de productos
+            function updateProductList(products) {
+                productList.innerHTML = '';
+                products.forEach(product => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <h2>${product.title}</h2>
+                        <p>${product.description}</p>
+                        <p>Precio: $${product.price}</p>
+                        <p>Stock: ${product.stock}</p>
+                        <p>Categoría: ${product.category}</p>
+                        ${product.thumbnails.length ? `<img src="${product.thumbnails[0]}" alt="${product.title}" style="width:100px;">` : ''}
+                        <button onclick="deleteProduct(${product.id})">Eliminar</button>
+                    `;
+                    productList.appendChild(li);
+                });
+            }
+
+            // Recibir actualizaciones de productos
+            socket.on('updateProducts', (products) => {
+                updateProductList(products);
+            });
+
+            // Enviar solicitud para eliminar un producto
+            window.deleteProduct = (id) => {
+                socket.emit('deleteProduct', id);
+            };
+
+            // Cargar los productos iniciales
+            const initialProducts = {{{json products}}};
+            updateProductList(initialProducts);
+        });
+    </script>
+</head>
+<body>
+    <h1>Productos en Tiempo Real</h1>
+    <ul id="product-list"></ul>
+</body>
+</html>
