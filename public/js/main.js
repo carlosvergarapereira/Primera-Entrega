@@ -1,3 +1,4 @@
+
 const socket = io();
 
 // Actualizar la lista de productos cuando se recibe un mensaje del servidor

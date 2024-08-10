@@ -1,72 +1,134 @@
+/* General Styles */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
     background-color: #f4f4f4;
+    color: #333;
+    line-height: 1.6;
 }
 
+/* Header Styles */
 header {
     background-color: #333;
     color: #fff;
-    padding: 10px 0;
+    padding: 15px 0;
     text-align: center;
+    border-bottom: 5px solid #e74c3c;
 }
 
+header h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+/* Navigation Styles */
 nav ul {
     list-style: none;
     padding: 0;
+    display: flex;
+    justify-content: center;
+    margin: 10px 0 0;
 }
 
 nav ul li {
-    display: inline;
-    margin: 0 10px;
+    margin: 0 15px;
 }
 
 nav ul li a {
     color: #fff;
     text-decoration: none;
+    font-size: 16px;
 }
 
+nav ul li a:hover {
+    text-decoration: underline;
+}
+
+/* Main Content Styles */
 main {
     padding: 20px;
+    max-width: 800px;
+    margin: 20px auto;
 }
 
+/* Product List Styles */
 .product-list {
     list-style: none;
     padding: 0;
+    margin: 0;
 }
 
 .product-item {
     background-color: #fff;
     border: 1px solid #ddd;
-    margin: 10px 0;
-    padding: 15px;
+    margin: 15px 0;
+    padding: 20px;
     border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+}
+
+.product-item:hover {
+    background-color: #f9f9f9;
 }
 
 .product-item h2 {
     margin-top: 0;
+    font-size: 20px;
+    color: #e74c3c;
+}
+
+.product-item p {
+    margin: 10px 0;
+}
+
+.product-item img {
+    max-width: 100px;
+    margin-right: 20px;
+    float: left;
 }
 
 .product-item button {
     background-color: #e74c3c;
     color: #fff;
     border: none;
-    padding: 10px;
+    padding: 10px 15px;
     cursor: pointer;
     border-radius: 5px;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
 }
 
 .product-item button:hover {
     background-color: #c0392b;
 }
 
+/* Clearfix for Floats */
+.product-item::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* Footer Styles */
 footer {
     text-align: center;
-    padding: 10px 0;
+    padding: 15px 0;
     background-color: #333;
     color: #fff;
-    position: absolute;
+    position: relative;
     width: 100%;
     bottom: 0;
+    border-top: 5px solid #e74c3c;
+    margin-top: 20px;
+}
+
+/* Additional Styles for Better Responsiveness */
+@media (max-width: 768px) {
+    .product-item img {
+        display: block;
+        margin: 0 auto 10px;
+        float: none;
+    }
 }

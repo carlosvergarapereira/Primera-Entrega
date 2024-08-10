@@ -17,10 +17,15 @@ const hbs = create({
 hbs.handlebars.registerHelper('json', (context) => {
     return JSON.stringify(context);
 });
-
+app.use(express.static('public'));
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 app.set('views', './views');
+
+// Ruta para el formulario de creación de productos
+app.get('/create', (req, res) => {
+    res.render('createProduct');
+});
 
 // Ruta para renderizar todos los productos
 app.get('/products', (req, res) => {
@@ -41,7 +46,7 @@ io.on('connection', (socket) => {
         const productIndex = products.findIndex(p => p.id === +productId);
         if (productIndex !== -1) {
             products.splice(productIndex, 1);
-            io.emit('updateProducts', products); // Notificar a todos los clientes
+            io.emit('updateProducts', products); 
         }
     });
 
@@ -59,7 +64,7 @@ app.post('/api/products', (req, res) => {
     };
 
     products.push(newProduct);
-    io.emit('updateProducts', products); // Notificar a todos los clientes
+    io.emit('updateProducts', products); 
 
     res.status(201).json({ message: 'Producto agregado', products });
 });
@@ -71,7 +76,7 @@ app.delete('/api/products/:id', (req, res) => {
 
     if (productIndex !== -1) {
         products.splice(productIndex, 1);
-        io.emit('updateProducts', products); // Notificar a todos los clientes
+        io.emit('updateProducts', products); 
         res.json({ message: 'Producto eliminado', products });
     } else {
         res.status(404).json({ message: 'No existe el producto con ese ID' });
@@ -82,6 +87,30 @@ app.delete('/api/products/:id', (req, res) => {
 function getMaxProductId(products) {
     return products.reduce((maxId, product) => Math.max(maxId, product.id), 0);
 }
+
+// Función para escribir productos al archivo
+const writeProductsToFile = (products) => {
+    try {
+        fs.writeFileSync(productsFilePath, JSON.stringify(products, null, 2));
+    } catch (error) {
+        console.error('Error al escribir productos en el archivo', error);
+    }
+};
+
+// Modifica la función que maneja la eliminación de productos
+app.delete('/api/products/:id', (req, res) => {
+    const id = +req.params.id;
+    const productIndex = products.findIndex(p => p.id === id);
+
+    if (productIndex !== -1) {
+        products.splice(productIndex, 1);
+        writeProductsToFile(products); // Escribir la lista actualizada en el archivo
+        io.emit('updateProducts', products); // Notificar a los clientes
+        res.json({ message: 'Producto eliminado', products });
+    } else {
+        res.status(404).json({ message: 'No existe el producto con ese ID' });
+    }
+});
 
 server.listen(8080, () => {
     console.log('Listening on 8080');
