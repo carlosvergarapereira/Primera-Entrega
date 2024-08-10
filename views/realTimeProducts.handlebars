@@ -3,27 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <title>Productos en Tiempo Real</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        img {
+            max-width: 100px;
+            height: auto;
+        }
+        button {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+    </style>
     <script src="/socket.io/socket.io.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const socket = io();
-            const productList = document.getElementById('product-list');
+            const productTableBody = document.getElementById('product-table-body');
 
-            // Función para actualizar la lista de productos en el DOM
-            function updateProductList(products) {
-                productList.innerHTML = '';
+            // Función para actualizar la tabla de productos en el DOM
+            function updateProductTable(products) {
+                productTableBody.innerHTML = '';
                 products.forEach(product => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `
-                        <h2>${product.title}</h2>
-                        <p>${product.description}</p>
-                        <p>Precio: $${product.price}</p>
-                        <p>Stock: ${product.stock}</p>
-                        <p>Categoría: ${product.category}</p>
-                        ${product.thumbnails.length ? `<img src="${product.thumbnails[0]}" alt="${product.title}" style="width:100px;">` : ''}
-                        <button onclick="deleteProduct(${product.id})">Eliminar</button>
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${product.title}</td>
+                        <td>${product.description}</td>
+                        <td>$${product.price}</td>
+                        <td>${product.stock}</td>
+                        <td>${product.category}</td>
+                        <td>${product.thumbnails.length ? `<img src="${product.thumbnails[0]}" alt="${product.title}">` : ''}</td>
+                        <td><button onclick="deleteProduct(${product.id})">Eliminar</button></td>
                     `;
-                    productList.appendChild(li);
+                    productTableBody.appendChild(tr);
                 });
             }
 
@@ -32,23 +60,22 @@
                 fetch(`/api/products/${productId}`, {
                     method: 'DELETE'
                 })
-                .then(response => response.json())  // Corrige el error de typo
+                .then(response => response.json())
                 .then(data => {
                     console.log('Producto eliminado:', data);
-                    // No es necesario recargar la página; los productos se actualizarán automáticamente
                 })
                 .catch(error => console.error('Error al eliminar producto:', error));
             }
 
-            // Escuchar el evento 'updateProducts' del servidor para actualizar la lista de productos
+            // Escuchar el evento 'updateProducts' del servidor para actualizar la tabla de productos
             socket.on('updateProducts', (updatedProducts) => {
                 console.log('Productos actualizados:', updatedProducts);
-                updateProductList(updatedProducts); // Llama a la función para refrescar la lista en la página
+                updateProductTable(updatedProducts);
             });
 
             // Cargar los productos iniciales
             const initialProducts = {{{json products}}};
-            updateProductList(initialProducts);
+            updateProductTable(initialProducts);
 
             // Exponer la función deleteProduct globalmente para que pueda ser llamada desde el HTML
             window.deleteProduct = deleteProduct;
@@ -57,6 +84,21 @@
 </head>
 <body>
     <h1>Productos en Tiempo Real</h1>
-    <ul id="product-list"></ul>
+    <table>
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Descripción</th>
+                <th>Precio</th>
+                <th>Stock</th>
+                <th>Categoría</th>
+                <th>Imagen</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody id="product-table-body">
+            <!-- Aquí se insertarán las filas de productos dinámicamente -->
+        </tbody>
+    </table>
 </body>
 </html>

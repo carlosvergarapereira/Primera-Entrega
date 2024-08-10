@@ -14,37 +14,55 @@
 
     <main>
         <form id="createProductForm">
-            <div>
-                <label for="title">Título:</label>
-                <input type="text" id="title" name="title" required>
-                <span id="titleError" style="color: red; display: none;">El título es obligatorio.</span>
-            </div>
-            <div>
-                <label for="description">Descripción:</label>
-                <input type="text" id="description" name="description" required>
-                <span id="descriptionError" style="color: red; display: none;">La descripción es obligatoria.</span>
-            </div>
-            <div>
-                <label for="code">Código:</label>
-                <input type="text" id="code" name="code" required>
-                <span id="codeError" style="color: red; display: none;">El código es obligatorio.</span>
-            </div>
-            <div>
-                <label for="price">Precio:</label>
-                <input type="number" id="price" name="price" required min="0">
-                <span id="priceError" style="color: red; display: none;">El precio es obligatorio y debe ser un valor positivo.</span>
-            </div>
-            <div>
-                <label for="stock">Stock:</label>
-                <input type="number" id="stock" name="stock" required min="0">
-                <span id="stockError" style="color: red; display: none;">El stock es obligatorio y debe ser un valor positivo.</span>
-            </div>
-            <div>
-                <label for="category">Categoría:</label>
-                <input type="text" id="category" name="category" required>
-                <span id="categoryError" style="color: red; display: none;">La categoría es obligatoria.</span>
-            </div>
-            <button type="submit">Crear</button>
+            <table>
+                <tr>
+                    <td><label for="title">Título:</label></td>
+                    <td>
+                        <input type="text" id="title" name="title" required>
+                        <span id="titleError" style="color: red; display: none;">El título es obligatorio.</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="description">Descripción:</label></td>
+                    <td>
+                        <input type="text" id="description" name="description" required>
+                        <span id="descriptionError" style="color: red; display: none;">La descripción es obligatoria.</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="code">Código:</label></td>
+                    <td>
+                        <input type="text" id="code" name="code" required>
+                        <span id="codeError" style="color: red; display: none;">El código es obligatorio.</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="price">Precio:</label></td>
+                    <td>
+                        <input type="number" id="price" name="price" required min="0">
+                        <span id="priceError" style="color: red; display: none;">El precio es obligatorio y debe ser un valor positivo.</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="stock">Stock:</label></td>
+                    <td>
+                        <input type="number" id="stock" name="stock" required min="0">
+                        <span id="stockError" style="color: red; display: none;">El stock es obligatorio y debe ser un valor positivo.</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="category">Categoría:</label></td>
+                    <td>
+                        <input type="text" id="category" name="category" required>
+                        <span id="categoryError" style="color: red; display: none;">La categoría es obligatoria.</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align: center;">
+                        <button type="submit">Crear</button>
+                    </td>
+                </tr>
+            </table>
         </form>
         <div id="message" style="margin-top: 20px;"></div>
     </main>
