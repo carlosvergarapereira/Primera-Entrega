@@ -9,7 +9,7 @@
             const socket = io();
             const productList = document.getElementById('product-list');
 
-            // Actualizar la lista de productos
+            // Función para actualizar la lista de productos en el DOM
             function updateProductList(products) {
                 productList.innerHTML = '';
                 products.forEach(product => {
@@ -26,32 +26,32 @@
                     productList.appendChild(li);
                 });
             }
-            //Elimina Productos
+
+            // Función para eliminar un producto
             function deleteProduct(productId) {
                 fetch(`/api/products/${productId}`, {
                     method: 'DELETE'
                 })
-                .then(response => response.js())
+                .then(response => response.json())  // Corrige el error de typo
                 .then(data => {
-                    console.log('Producto eliminado:', data); // No es necesario recargar la página; los productos se actualizarán automáticamente
-            })
-            .catch(error => console.error('Error al eliminar producto:', error));
+                    console.log('Producto eliminado:', data);
+                    // No es necesario recargar la página; los productos se actualizarán automáticamente
+                })
+                .catch(error => console.error('Error al eliminar producto:', error));
             }
 
+            // Escuchar el evento 'updateProducts' del servidor para actualizar la lista de productos
             socket.on('updateProducts', (updatedProducts) => {
-             // Aquí se podría actualizar la lista de productos sin recargar la página.
-             console.log('Productos actualizados:', updatedProducts);
-            // Implementa la lógica para refrescar la lista en la página si es necesario.
-             });
-
-            // Enviar solicitud para eliminar un producto
-            window.deleteProduct = (id) => {
-                socket.emit('deleteProduct', id);
-            };
+                console.log('Productos actualizados:', updatedProducts);
+                updateProductList(updatedProducts); // Llama a la función para refrescar la lista en la página
+            });
 
             // Cargar los productos iniciales
             const initialProducts = {{{json products}}};
             updateProductList(initialProducts);
+
+            // Exponer la función deleteProduct globalmente para que pueda ser llamada desde el HTML
+            window.deleteProduct = deleteProduct;
         });
     </script>
 </head>

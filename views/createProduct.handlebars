@@ -15,46 +15,113 @@
     <main>
         <form id="createProductForm">
             <div>
-                <label for="title">Titulo:</label>
+                <label for="title">Título:</label>
                 <input type="text" id="title" name="title" required>
+                <span id="titleError" style="color: red; display: none;">El título es obligatorio.</span>
             </div>
             <div>
                 <label for="description">Descripción:</label>
                 <input type="text" id="description" name="description" required>
+                <span id="descriptionError" style="color: red; display: none;">La descripción es obligatoria.</span>
             </div>
             <div>
-                <label for="code">Codigo:</label>
+                <label for="code">Código:</label>
                 <input type="text" id="code" name="code" required>
+                <span id="codeError" style="color: red; display: none;">El código es obligatorio.</span>
             </div>
             <div>
                 <label for="price">Precio:</label>
-                <input type="number" id="price" name="price" required>
+                <input type="number" id="price" name="price" required min="0">
+                <span id="priceError" style="color: red; display: none;">El precio es obligatorio y debe ser un valor positivo.</span>
             </div>
             <div>
                 <label for="stock">Stock:</label>
-                <input type="number" id="stock" name="stock" required>
+                <input type="number" id="stock" name="stock" required min="0">
+                <span id="stockError" style="color: red; display: none;">El stock es obligatorio y debe ser un valor positivo.</span>
             </div>
             <div>
-                <label for="category">Categoria:</label>
+                <label for="category">Categoría:</label>
                 <input type="text" id="category" name="category" required>
+                <span id="categoryError" style="color: red; display: none;">La categoría es obligatoria.</span>
             </div>
             <button type="submit">Crear</button>
         </form>
         <div id="message" style="margin-top: 20px;"></div>
     </main>
 
-
     <script>
         document.getElementById('createProductForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
+            const title = e.target.title.value.trim();
+            const description = e.target.description.value.trim();
+            const code = e.target.code.value.trim();
+            const price = parseFloat(e.target.price.value);
+            const stock = parseInt(e.target.stock.value);
+            const category = e.target.category.value.trim();
+
+            let isValid = true;
+
+            // Validación del campo título
+            if (!title) {
+                document.getElementById('titleError').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('titleError').style.display = 'none';
+            }
+
+            // Validación del campo descripción
+            if (!description) {
+                document.getElementById('descriptionError').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('descriptionError').style.display = 'none';
+            }
+
+            // Validación del campo código
+            if (!code) {
+                document.getElementById('codeError').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('codeError').style.display = 'none';
+            }
+
+            // Validación del campo precio
+            if (isNaN(price) || price <= 0) {
+                document.getElementById('priceError').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('priceError').style.display = 'none';
+            }
+
+            // Validación del campo stock
+            if (isNaN(stock) || stock < 0) {
+                document.getElementById('stockError').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('stockError').style.display = 'none';
+            }
+
+            // Validación del campo categoría
+            if (!category) {
+                document.getElementById('categoryError').style.display = 'block';
+                isValid = false;
+            } else {
+                document.getElementById('categoryError').style.display = 'none';
+            }
+
+            // Si el formulario no es válido, no continuar con la solicitud
+            if (!isValid) {
+                return;
+            }
+
             const formData = {
-                title: e.target.title.value,
-                description: e.target.description.value,
-                code: e.target.code.value,
-                price: e.target.price.value,
-                stock: e.target.stock.value,
-                category: e.target.category.value
+                title,
+                description,
+                code,
+                price,
+                stock,
+                category
             };
 
             const messageDiv = document.getElementById('message');
@@ -77,7 +144,7 @@
                 }
             } catch (error) {
                 console.error('Error:', error);
-                messageDiv.innerHTML = `<p style="color: red;">A ocurrido un error.</p>`;
+                messageDiv.innerHTML = `<p style="color: red;">Ha ocurrido un error.</p>`;
             }
         });
     </script>
