@@ -1,0 +1,28 @@
+[
+  {
+    "id": 1,
+    "title": "Estufa",
+    "description": "Gas",
+    "code": "A001",
+    "price": 150,
+    "status": true,
+    "stock": 10,
+    "category": "Hogar",
+    "thumbnails": [
+      "https://s.libertaddigital.com/2021/01/08/estufa-de-gas-butano-de-llama-azul-orbegozo-hbf100.jpg"
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Termoventilador",
+    "description": "Electrico",
+    "code": "A002",
+    "price": 25,
+    "status": true,
+    "stock": 5,
+    "category": "Hogar",
+    "thumbnails": [
+      "https://www.abcdin.cl/dw/image/v2/BCPP_PRD/on/demandware.static/-/Sites-master-catalog/default/dw1a7d9fc6/images/large/19527760.jpg?sw=1200&sh=1200&sm=fit"
+    ]
+  }
+]

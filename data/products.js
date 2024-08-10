@@ -1,41 +1,29 @@
-export const products = [
-  {
-    "id": 1,
-    "title": "Estufa",
-    "description": "Gas",
-    "code": "A001",
-    "price": 150,
-    "status": true,
-    "stock": 10,
-    "category": "Hogar",
-    "thumbnails": [
-      "https://s.libertaddigital.com/2021/01/08/estufa-de-gas-butano-de-llama-azul-orbegozo-hbf100.jpg"
-    ]
-  },
-  {
-    "id": 2,
-    "title": "Termoventilador",
-    "description": "Electrico",
-    "code": "A002",
-    "price": 25,
-    "status": true,
-    "stock": 5,
-    "category": "Hogar",
-    "thumbnails": [
-      "https://www.abcdin.cl/dw/image/v2/BCPP_PRD/on/demandware.static/-/Sites-master-catalog/default/dw1a7d9fc6/images/large/19527760.jpg?sw=1200&sh=1200&sm=fit"
-    ]
-  },
-  {
-    "id": 3,
-    "title": "Tijeras chicas",
-    "description": "Herramientas",
-    "code": "A003",
-    "price": 10,
-    "status": true,
-    "stock": 15,
-    "category": "Jardin Y Patio",
-    "thumbnails": [
-      "https://cdnx.jumpseller.com/comercial-luckymaq/image/29482259/TIJERA_PODA_ERGO_MANGO_FIJO_M3_PROFESIONAL_PX-M3_BAHCO.webp?1668603084"
-    ]
-  }
-];
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const productsFilePath = path.join(__dirname, 'products.json'); // Ruta del archivo JSON
+
+// Cargar productos desde el archivo JSON al inicio
+let products = JSON.parse(fs.readFileSync(productsFilePath, 'utf-8'));
+
+export function getProducts() {
+  return products;
+}
+
+export function addProduct(product) {
+  products.push(product);
+  saveProducts(); // Guarda automáticamente después de agregar
+}
+
+export function deleteProduct(productId) {
+  products = products.filter(product => product.id !== productId);
+  saveProducts(); // Guarda automáticamente después de eliminar
+}
+
+export function saveProducts() {
+  const data = JSON.stringify(products, null, 2);
+  fs.writeFileSync(productsFilePath, data, 'utf-8');
+}

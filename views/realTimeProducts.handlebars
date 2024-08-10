@@ -31,7 +31,7 @@
                 fetch(`/api/products/${productId}`, {
                     method: 'DELETE'
                 })
-                .then(response => response.json())
+                .then(response => response.js())
                 .then(data => {
                     console.log('Producto eliminado:', data); // No es necesario recargar la página; los productos se actualizarán automáticamente
             })
