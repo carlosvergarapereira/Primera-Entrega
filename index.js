@@ -15,6 +15,7 @@ const io = new SocketIOServer(server);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+
 const hbs = create({
     extname: '.handlebars',
     defaultLayout: 'main',

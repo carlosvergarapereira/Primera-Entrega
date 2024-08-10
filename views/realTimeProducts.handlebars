@@ -36,19 +36,25 @@
         document.addEventListener('DOMContentLoaded', () => {
             const socket = io();
             const productTableBody = document.getElementById('product-table-body');
+            const defaultImageUrl = 'https://www.shutterstock.com/image-vector/default-ui-image-placeholder-wireframes-600nw-1037719192.jpg'; // URL de la imagen predeterminada
 
             // Función para actualizar la tabla de productos en el DOM
             function updateProductTable(products) {
                 productTableBody.innerHTML = '';
                 products.forEach(product => {
+                    // Asegúrate de que `thumbnails` sea un array y esté definido
+                    const thumbnails = Array.isArray(product.thumbnails) ? product.thumbnails : [];
+                    const imageUrl = thumbnails.length > 0 ? thumbnails[0] : defaultImageUrl;
+                    const imageHtml = `<img src="${imageUrl}" alt="${product.title}">`;
+
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td>${product.title}</td>
                         <td>${product.description}</td>
-                        <td>$${product.price}</td>
+                        <td>$${product.price.toFixed(2)}</td>
                         <td>${product.stock}</td>
                         <td>${product.category}</td>
-                        <td>${product.thumbnails.length ? `<img src="${product.thumbnails[0]}" alt="${product.title}">` : ''}</td>
+                        <td>${imageHtml}</td>
                         <td><button onclick="deleteProduct(${product.id})">Eliminar</button></td>
                     `;
                     productTableBody.appendChild(tr);
