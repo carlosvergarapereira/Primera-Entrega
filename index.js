@@ -24,6 +24,7 @@ hbs.handlebars.registerHelper('json', (context) => {
     return JSON.stringify(context);
 });
 
+app.use(express.json()); 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.engine('handlebars', hbs.engine);

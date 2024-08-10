@@ -134,32 +134,32 @@
             }
 
             const formData = {
-                title,
-                description,
-                code,
-                price,
-                stock,
-                category
+            title,
+            description,
+            code,
+            price,
+            stock,
+            category
             };
 
             const messageDiv = document.getElementById('message');
 
             try {
-                const response = await fetch('/api/products', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
-                });
+            const response = await fetch('/api/products', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
 
-                if (response.ok) {
-                    messageDiv.innerHTML = `<p style="color: green;">Producto creado!</p>`;
-                    // Reset the form fields
-                    e.target.reset();
-                } else {
-                    messageDiv.innerHTML = `<p style="color: red;">Producto no creado.</p>`;
-                }
+            if (response.ok) {
+                messageDiv.innerHTML = `<p style="color: green;">Producto creado!</p>`;
+                e.target.reset();
+            } else {
+                const errorData = await response.json();
+                messageDiv.innerHTML = `<p style="color: red;">Error: ${errorData.message}</p>`;
+            }
             } catch (error) {
                 console.error('Error:', error);
                 messageDiv.innerHTML = `<p style="color: red;">Ha ocurrido un error.</p>`;
