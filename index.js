@@ -68,7 +68,19 @@ io.on('connection', (socket) => {
         io.emit('updateProducts', getProducts()); // Actualiza todos los clientes
     });
 
-    // Evento para eliminar un cart
+    // Evento para crear un nuevo producto
+    socket.on('createProduct', async (productData) => {
+        const newProduct = {
+            id: getMaxProductId(getProducts()) + 1,
+            ...productData
+        };
+        addProduct(newProduct);
+        saveProducts();
+        io.emit('updateProducts', getProducts());
+    });
+
+
+    // Evento para eliminar un carro
     socket.on('deleteCart', async (cartId) => {
         deleteCart(+cartId);
         await saveCarts(); // Actualiza el archivo de carts
@@ -81,23 +93,6 @@ io.on('connection', (socket) => {
     });
 });
 
-// Manejar la creación de productos
-app.post('/api/products', (req, res) => {
-    const newProduct = {
-        id: getMaxProductId(getProducts()) + 1,
-        ...req.body
-    };
-
-    addProduct(newProduct);
-    io.emit('updateProducts', getProducts());
-
-    res.status(201).json({ message: 'Producto agregado', products: getProducts() });
-});
-
-// Función para obtener el ID máximo de los productos
-function getMaxProductId(products) {
-    return products.reduce((maxId, product) => Math.max(maxId, product.id), 0);
-}
 
 server.listen(8080, () => {
     console.log('Listening on 8080');
