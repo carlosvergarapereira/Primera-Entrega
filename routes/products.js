@@ -1,61 +1,21 @@
 import express from 'express';
-import { create } from 'express-handlebars';
-import { Server as SocketIOServer } from 'socket.io';
-import http from 'http';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import productRoutes from './routes/products.js'; // Importa las rutas de productos
+import { getProducts, deleteProduct, saveProducts } from '../data/products.js';
 
-const app = express();
-const server = http.createServer(app);
-const io = new SocketIOServer(server);
+const router = express.Router();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// Ruta para eliminar un producto por ID
+router.delete('/:id', (req, res) => {
+    const id = +req.params.id;
+    const productIndex = getProducts().findIndex(p => p.id === id);
 
-const hbs = create({
-    extname: '.handlebars',
-    defaultLayout: 'main',
+    if (productIndex !== -1) {
+        deleteProduct(id);
+        saveProducts(); // Guarda los cambios en el archivo
+        req.app.get('io').emit('updateProducts', getProducts()); // Notificar a los clientes
+        res.json({ message: 'Producto eliminado', products: getProducts() });
+    } else {
+        res.status(404).json({ message: 'No existe el producto con ese ID' });
+    }
 });
 
-hbs.handlebars.registerHelper('json', (context) => {
-    return JSON.stringify(context);
-});
-
-app.use(express.json()); 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static('public'));
-app.engine('handlebars', hbs.engine);
-app.set('view engine', 'handlebars');
-app.set('views', './views');
-
-// Usa las rutas importadas
-app.use('/api/products', productRoutes);
-
-// WebSocket para manejar la conexión y los eventos
-io.on('connection', (socket) => {
-    console.log('Nuevo cliente conectado');
-
-    // Evento para eliminar un producto
-    socket.on('deleteProduct', async (productId) => {
-        // Llama al router para manejar la lógica de eliminar
-        await deleteProductHandler(productId);
-        io.emit('updateProducts', getProducts()); // Actualiza todos los clientes
-    });
-
-    // Evento para eliminar un cart
-    socket.on('deleteCart', async (cartId) => {
-        deleteCart(+cartId);
-        await saveCarts(); // Actualiza el archivo de carts
-        io.emit('updateCarts', getCarts()); // Actualiza todos los clientes
-    });
-
-    // Evento cuando el cliente se desconecta
-    socket.on('disconnect', () => {
-        console.log('Cliente desconectado');
-    });
-});
-
-server.listen(8080, () => {
-    console.log('Listening on 8080');
-});
+export default router;

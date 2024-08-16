@@ -2,7 +2,8 @@ import express from 'express';
 import { create } from 'express-handlebars';
 import { Server as SocketIOServer } from 'socket.io';
 import http from 'http';
-import { getProducts, addProduct, deleteProduct, saveProducts } from './data/products.js';
+import productsRouter from './routes/products.js';
+import { getProducts, addProduct, saveProducts } from './data/products.js';
 import { getCarts, addCart, deleteCart, saveCarts } from './data/carts.js';
 import fs from 'fs';
 import path from 'path';
@@ -15,6 +16,7 @@ const io = new SocketIOServer(server);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+app.set('io', io);
 
 const hbs = create({
     extname: '.handlebars',
@@ -25,12 +27,15 @@ hbs.handlebars.registerHelper('json', (context) => {
     return JSON.stringify(context);
 });
 
-app.use(express.json()); 
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 app.set('views', './views');
+
+// Usa el router de productos
+app.use('/api/products', productsRouter);
 
 // Ruta para el formulario de creación de productos
 app.get('/create', (req, res) => {
@@ -84,24 +89,9 @@ app.post('/api/products', (req, res) => {
     };
 
     addProduct(newProduct);
-    io.emit('updateProducts', getProducts()); 
+    io.emit('updateProducts', getProducts());
 
     res.status(201).json({ message: 'Producto agregado', products: getProducts() });
-});
-
-// Manejar la eliminación de productos
-app.delete('/api/products/:id', (req, res) => {
-    const id = +req.params.id;
-    const productIndex = getProducts().findIndex(p => p.id === id);
-
-    if (productIndex !== -1) {
-        deleteProduct(id);
-        saveProducts(); // Guarda los cambios en el archivo
-        io.emit('updateProducts', getProducts()); // Notificar a los clientes
-        res.json({ message: 'Producto eliminado', products: getProducts() });
-    } else {
-        res.status(404).json({ message: 'No existe el producto con ese ID' });
-    }
 });
 
 // Función para obtener el ID máximo de los productos
