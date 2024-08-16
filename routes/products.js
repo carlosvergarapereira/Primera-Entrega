@@ -1,117 +1,61 @@
-
 import express from 'express';
-import fs from 'fs';
+import { create } from 'express-handlebars';
+import { Server as SocketIOServer } from 'socket.io';
+import http from 'http';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { products } from '../data/products.js';
+import productRoutes from './routes/products.js'; // Importa las rutas de productos
 
-const router = express.Router();
+const app = express();
+const server = http.createServer(app);
+const io = new SocketIOServer(server);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const productsFilePath = path.join(__dirname, '../data/products.js');
-
-function getMaxProductId(products) {
-    let maxId = 0;
-    for (const product of products) {
-        if (product.id > maxId) {
-            maxId = product.id;
-        }
-    }
-    return maxId;
-}
-
-function saveProductsToFile(products) {
-    fs.writeFileSync(productsFilePath, `export const products = ${JSON.stringify(products, null, 2)};`);
-}
-
-// Obtener todos los productos
-router.get('/', (req, res) => {
-    const query = req.query.category;
-
-    if (query && (query === 'Hogar' || query === 'jardin')) {
-        const productByDescription = products.filter(p => p.category === query);
-        return res.json({ productByDescription });
-    }
-    res.json({ products });
+const hbs = create({
+    extname: '.handlebars',
+    defaultLayout: 'main',
 });
 
-// Obtener un producto por ID
-router.get('/:id', (req, res) => {
-    const id = +req.params.id;
-
-    if (Number.isNaN(id)) {
-        return res.json({ message: 'El id ingresado no es numerico' });
-    }
-
-    const product = products.find(p => p.id === id);
-
-    if (!product) {
-        return res.json({ message: 'El id ingresado no existe' });
-    }
-
-    res.json({ product });
+hbs.handlebars.registerHelper('json', (context) => {
+    return JSON.stringify(context);
 });
 
-// Crear un nuevo producto
-router.post('/', (req, res) => {
-    const newIdProduct = {
-        id: getMaxProductId(products) + 1,
-        ...req.body
-    };
+app.use(express.json()); 
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static('public'));
+app.engine('handlebars', hbs.engine);
+app.set('view engine', 'handlebars');
+app.set('views', './views');
 
-    const existingProduct = products.find(p => p.id === newIdProduct.id);
-    if (existingProduct) {
-        return res.status(400).json({ message: 'El ID ya existe' });
-    }
+// Usa las rutas importadas
+app.use('/api/products', productRoutes);
 
-    const requiredFields = ['title', 'description', 'code', 'price', 'status', 'stock', 'category'];
-    for (const field of requiredFields) {
-        if (!newIdProduct[field]) {
-            return res.status(400).json({ message: `El campo ${field} es obligatorio y no debe estar vacío` });
-        }
-    }
+// WebSocket para manejar la conexión y los eventos
+io.on('connection', (socket) => {
+    console.log('Nuevo cliente conectado');
 
-    products.push(newIdProduct);
-    saveProductsToFile(products);
-    res.status(201).json({ message: 'Request successful', products });
+    // Evento para eliminar un producto
+    socket.on('deleteProduct', async (productId) => {
+        // Llama al router para manejar la lógica de eliminar
+        await deleteProductHandler(productId);
+        io.emit('updateProducts', getProducts()); // Actualiza todos los clientes
+    });
+
+    // Evento para eliminar un cart
+    socket.on('deleteCart', async (cartId) => {
+        deleteCart(+cartId);
+        await saveCarts(); // Actualiza el archivo de carts
+        io.emit('updateCarts', getCarts()); // Actualiza todos los clientes
+    });
+
+    // Evento cuando el cliente se desconecta
+    socket.on('disconnect', () => {
+        console.log('Cliente desconectado');
+    });
 });
 
-// Actualizar un producto por ID
-router.put('/:id', (req, res) => {
-    const id = +req.params.id;
-    const newProduct = req.body;
-
-    if (!newProduct.title || !newProduct.description || !newProduct.code || !newProduct.price || !newProduct.status || !newProduct.stock || !newProduct.category) {
-        return res.status(400).json({ message: 'Faltan Campos' });
-    }
-
-    const product = products.find(p => p.id === id);
-    if (!product) {
-        return res.status(404).json({ message: `No existe el producto con ID ${id}` });
-    }
-
-    const pos = products.findIndex(p => p.id === id);
-    products[pos] = { ...product, ...newProduct };
-    saveProductsToFile(products);
-
-    res.status(200).json({ message: 'Producto actualizado', product: products[pos] });
+server.listen(8080, () => {
+    console.log('Listening on 8080');
 });
-
-// Eliminar un producto por ID
-router.delete('/:id', (req, res) => {
-    const id = +req.params.id;
-
-    const productIndex = products.findIndex(p => p.id === id);
-    if (productIndex === -1) {
-        return res.status(404).json({ message: 'No existe el producto con ese ID' });
-    }
-
-    products.splice(productIndex, 1);
-    saveProductsToFile(products);
-
-    res.json({ message: 'Producto eliminado', products });
-});
-
-export default router;
