@@ -1,61 +1,33 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Productos</title>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        table, th, td {
-            border: 1px solid black;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        img {
-            max-width: 100px;
-            height: auto;
-        }
-    </style>
-</head>
-<body>
-    <h1>Lista de Productos</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Título</th>
-                <th>Descripción</th>
-                <th>Precio</th>
-                <th>Stock</th>
-                <th>Categoría</th>
-                <th>Imagen</th>
-            </tr>
-        </thead>
-        <tbody>
-            {{#each products}}
-                <tr>
-                    <td>{{this.title}}</td>
-                    <td>{{this.description}}</td>
-                    <td>${{this.price}}</td>
-                    <td>{{this.stock}}</td>
-                    <td>{{this.category}}</td>
-                    <td>
-                        {{#if this.thumbnails.length}}
-                            <img src="{{this.thumbnails.[0]}}" alt="{{this.title}}">
-                        {{/if}}
-                    </td>
-                </tr>
-            {{/each}}
-        </tbody>
-    </table>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="/js/main.js"></script>
-</body>
-</html>
+<h1>Lista de Productos</h1>
+
+<div class="product-list">
+  {{#each payload}}
+    <div class="product-item">
+      <h2>{{nombre}}</h2>
+      <p>Precio: ${{precio}}</p>
+      <p>Categoría: {{categoria}}</p>
+      <p>{{descripcion}}</p>
+      
+      <!-- Botón para ver detalles del producto -->
+      <a href="/products/{{_id}}">Ver detalles</a>
+
+      <!-- Botón para agregar al carrito directamente -->
+      <form action="/api/carts/{{carritoId}}/products/{{_id}}" method="POST">
+        <button type="submit">Agregar al carrito</button>
+      </form>
+    </div>
+  {{/each}}
+</div>
+
+<!-- Paginación -->
+<div class="pagination">
+  {{#if hasPrevPage}}
+    <a href="{{prevLink}}">Anterior</a>
+  {{/if}}
+
+  Página {{page}} de {{totalPages}}
+
+  {{#if hasNextPage}}
+    <a href="{{nextLink}}">Siguiente</a>
+  {{/if}}
+</div>
