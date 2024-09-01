@@ -1,0 +1,1 @@
+const Producto = mongoose.model('Producto', productoSchema);

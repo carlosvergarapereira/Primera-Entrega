@@ -8,14 +8,24 @@ import { getCarts, addCart, deleteCart, saveCarts } from './data/carts.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 
-const mongoose = require('mongoose');
+import productoSchema from './schemas/products.js';
+
 const app = express();
 const server = http.createServer(app);
 const io = new SocketIOServer(server);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+
+
+const Producto = mongoose.model('Producto', productoSchema);
+
+dotenv.config();
+const mongooseUri = process.env.MONGODB_URI;
 
 app.set('io', io);
 
@@ -94,7 +104,25 @@ io.on('connection', (socket) => {
     });
 });
 
+mongoose.connect(mongooseUri)
+  .then(() => console.log('Conectado a carrito_compra'))
+  .catch(err => console.error(err));
 
 server.listen(8080, () => {
     console.log('Listening on 8080');
+
+
+    const nuevoProducto = new Producto({
+        nombre: 'iPhone 16',
+        precio: 1000,
+        descripcion: 'El último teléfono de Apple'
+      });
+
+    Producto.find()
+    .then(Producto => {
+        console.log(nuevoProducto); // Imprime todos los productos en la consola
+    })
+    .catch(err => {
+        console.error(err);
+    });
 });
