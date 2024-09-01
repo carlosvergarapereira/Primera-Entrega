@@ -9,6 +9,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+const mongoose = require('mongoose');
 const app = express();
 const server = http.createServer(app);
 const io = new SocketIOServer(server);
