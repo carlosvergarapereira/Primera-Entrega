@@ -1,27 +1,24 @@
 import express from 'express';
 import Productos from '../models/products.js';
-import Carts from '../models/carts.js'; 
+import Carts from '../models/carts.js';
 const router = express.Router();
 
 // Ruta para mostrar la página de creación de productos usando Handlebars
 router.get('/create', (req, res) => {
-  res.render('createProduct', { title: 'Crear Nuevo Producto' }); // Asegúrate de que 'createProduct' es el nombre correcto de tu archivo de vista
+  res.render('createProduct', { title: 'Crear Nuevo Producto' });
 });
 
 // Ruta para mostrar la lista de productos con paginación
 router.get('/products', async (req, res) => {
   const { query, sort = 'asc', page = 1, limit = 10 } = req.query;
-
-  // Definir el filtro basado en el query parameter
   let filter = {};
 
   // Si se proporciona un query parameter, añadirlo al filtro
   if (query) {
     filter = {
       $or: [
-        { title: { $regex: query, $options: 'i' } }, // Filtra por título
-        { description: { $regex: query, $options: 'i' } }, // Filtra por descripción
-        // Añade más campos si es necesario
+        { nombre: { $regex: query, $options: 'i' } }, // Filtra por nombre
+        { descripcion: { $regex: query, $options: 'i' } }, // Filtra por descripción
       ],
     };
   }
@@ -30,10 +27,8 @@ router.get('/products', async (req, res) => {
   const products = await Productos.find(filter)
     .skip((page - 1) * limit)
     .limit(limit)
-    .sort({ price: sort === 'asc' ? 1 : -1 });
-    
+    .sort({ precio: sort === 'asc' ? 1 : -1 });
 
-  // Calcular valores para la paginación (por simplicidad, se asume que totalPages, hasPrevPage, etc. ya están definidos)
   const totalProducts = await Productos.countDocuments(filter);
   const totalPages = Math.ceil(totalProducts / limit);
   const hasPrevPage = page > 1;
@@ -52,4 +47,17 @@ router.get('/products', async (req, res) => {
   });
 });
 
-export default router;  
+// Ruta para servir la página de productos en tiempo real, cargando todos los productos disponibles
+router.get('/realtimeproducts', async (req, res) => {
+  try {
+      const products = await Productos.find({});
+      // Escapa correctamente el JSON
+      const productsJSON = JSON.stringify(products).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+      res.render('realtimeproducts', { products: productsJSON });
+  } catch (error) {
+      console.error('Error al cargar los productos:', error);
+      res.status(500).send('Error en el servidor');
+  }
+});
+
+export default router;

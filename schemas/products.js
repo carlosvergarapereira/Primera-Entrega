@@ -6,7 +6,7 @@ const productoSchema = new mongoose.Schema({
     descripcion: String,
     categoria: {
         type: String,
-        enum: ['electronica', 'ropa', 'hogar', 'otros'] // Puedes agregar más categorías si lo deseas
+        enum: ['electronica', 'ropa', 'hogar', 'otros'] //  agregar más categorías.
     },
     fechaCreacion: {
         type: Date,

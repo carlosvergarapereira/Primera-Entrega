@@ -30,61 +30,100 @@
             padding: 5px 10px;
             cursor: pointer;
         }
+        .edit-button {
+            background-color: green;
+            margin-right: 5px;
+        }
     </style>
     <script src="/socket.io/socket.io.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const socket = io();
             const productTableBody = document.getElementById('product-table-body');
-            const defaultImageUrl = 'https://www.shutterstock.com/image-vector/default-ui-image-placeholder-wireframes-600nw-1037719192.jpg'; // URL de la imagen predeterminada
 
-            // Función para actualizar la tabla de productos en el DOM
             function updateProductTable(products) {
                 productTableBody.innerHTML = '';
                 products.forEach(product => {
-                    // Asegúrate de que `thumbnails` sea un array y esté definido
-                    const thumbnails = Array.isArray(product.thumbnails) ? product.thumbnails : [];
-                    const imageUrl = thumbnails.length > 0 ? thumbnails[0] : defaultImageUrl;
-                    const imageHtml = `<img src="${imageUrl}" alt="${product.title}">`;
-
+                    const imageUrl = product.thumbnails && product.thumbnails.length > 0 ? product.thumbnails[0] : 'https://www.shutterstock.com/image-vector/default-ui-image-placeholder-wireframes-600nw-1037719192.jpg';
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td>${product.title}</td>
-                        <td>${product.description}</td>
-                        <td>$${product.price.toFixed(2)}</td>
-                        <td>${product.stock}</td>
-                        <td>${product.category}</td>
-                        <td>${imageHtml}</td>
-                        <td><button onclick="deleteProduct(${product.id})">Eliminar</button></td>
+                        <td>${product.nombre}</td>
+                        <td>${product.descripcion}</td>
+                        <td>$${product.precio.toFixed(2)}</td>
+                        <td>${product.estado ? 'Sí' : 'No'}</td>
+                        <td>${product.categoria}</td>
+                        <td><img src="${imageUrl}" alt="${product.nombre}"></td>
+                        <td>
+                            <button class="edit-button" onclick='openEditModal(${JSON.stringify(product)})'>Editar</button>
+                            <button onclick="deleteProduct('${product._id}')">Eliminar</button>
+                        </td>
                     `;
                     productTableBody.appendChild(tr);
                 });
             }
 
-            // Función para eliminar un producto
-            function deleteProduct(productId) {
+            function openEditModal(product) {
+                document.getElementById('editId').value = product._id;
+                document.getElementById('editNombre').value = product.nombre;
+                document.getElementById('editDescripcion').value = product.descripcion;
+                document.getElementById('editPrecio').value = product.precio;
+                document.getElementById('editCategoria').value = product.categoria;
+                document.getElementById('editEstado').checked = product.estado;
+                document.getElementById('editProductModal').style.display = 'block';
+            }
+
+            function closeEditModal() {
+                document.getElementById('editProductModal').style.display = 'none';
+            }
+
+            document.getElementById('editProductForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const productId = document.getElementById('editId').value;
+                const formData = {
+                    nombre: document.getElementById('editNombre').value,
+                    descripcion: document.getElementById('editDescripcion').value,
+                    precio: parseFloat(document.getElementById('editPrecio').value),
+                    categoria: document.getElementById('editCategoria').value,
+                    estado: document.getElementById('editEstado').checked
+                };
+
                 fetch(`/api/products/${productId}`, {
-                    method: 'DELETE'
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
                 })
                 .then(response => response.json())
                 .then(data => {
+                    console.log('Producto actualizado:', data);
+                    closeEditModal();
+                    location.reload(); // O actualiza la tabla directamente sin recargar
+                })
+                .catch(error => console.error('Error al actualizar producto:', error));
+            });
+
+            function deleteProduct(productId) {
+                fetch(`/api/products/${productId}`, { method: 'DELETE' })
+                .then(response => response.json())
+                .then(data => {
                     console.log('Producto eliminado:', data);
+                    location.reload(); // Recarga la página para reflejar los cambios
                 })
                 .catch(error => console.error('Error al eliminar producto:', error));
             }
 
-            // Escuchar el evento 'updateProducts' del servidor para actualizar la tabla de productos
+            // Carga inicial de productos
+            try {
+                const initialProducts = JSON.parse(document.getElementById('initialProducts').textContent);
+                updateProductTable(initialProducts);
+            } catch (error) {
+                console.error('Error al parsear los productos:', error);
+            }
+
             socket.on('updateProducts', (updatedProducts) => {
-                console.log('Productos actualizados:', updatedProducts);
                 updateProductTable(updatedProducts);
             });
-
-            // Cargar los productos iniciales
-            const initialProducts = {{{json products}}};
-            updateProductTable(initialProducts);
-
-            // Exponer la función deleteProduct globalmente para que pueda ser llamada desde el HTML
-            window.deleteProduct = deleteProduct;
         });
     </script>
 </head>
@@ -93,18 +132,59 @@
     <table>
         <thead>
             <tr>
-                <th>Título</th>
+                <th>Nombre</th>
                 <th>Descripción</th>
                 <th>Precio</th>
-                <th>Stock</th>
+                <th>Disponible</th>
                 <th>Categoría</th>
                 <th>Imagen</th>
                 <th>Acción</th>
             </tr>
         </thead>
         <tbody id="product-table-body">
-            <!-- Aquí se insertarán las filas de productos dinámicamente -->
+            <!-- Las filas de productos se insertarán aquí dinámicamente -->
         </tbody>
     </table>
+
+    <!-- Div oculto para almacenar productos iniciales -->
+    <div id="initialProducts" style="display: none;">
+        {{{products}}}
+    </div>
+
+    <!-- Modal de Edición de Producto -->
+    <div id="editProductModal" style="display: none; position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); background-color: white; padding: 20px; border: 2px solid black; z-index: 1000;">
+        <form id="editProductForm">
+            <input type="hidden" id="editId" name="id">
+            <p>
+                <label>Nombre:</label>
+                <input type="text" id="editNombre" name="nombre" required>
+            </p>
+            <p>
+                <label>Descripción:</label>
+                <input type="text" id="editDescripcion" name="descripcion" required>
+            </p>
+            <p>
+                <label>Precio:</label>
+                <input type="number" id="editPrecio" name="precio" required min="0">
+            </p>
+            <p>
+                <label>Categoría:</label>
+                <select id="editCategoria" name="categoria">
+                    <option value="electronica">Electrónica</option>
+                    <option value="ropa">Ropa</option>
+                    <option value="hogar">Hogar</option>
+                    <option value="otros">Otros</option>
+                </select>
+            </p>
+            <p>
+                <label>Estado:</label>
+                <input type="checkbox" id="editEstado" name="estado">
+            </p>
+            <p>
+                <button type="submit">Guardar Cambios</button>
+                <button type="button" onclick="closeEditModal()">Cerrar</button>
+            </p>
+        </form>
+    </div>
 </body>
 </html>

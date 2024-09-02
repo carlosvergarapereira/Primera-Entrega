@@ -25,6 +25,11 @@ const hbs = create({
   handlebars: allowInsecurePrototypeAccess(Handlebars),
   extname: '.handlebars',
   defaultLayout: 'main',
+  helpers: {
+    json: function (context) {
+      return JSON.stringify(context);
+    }
+  }
 });
 
 app.engine('handlebars', hbs.engine);
@@ -46,6 +51,7 @@ app.use('/api/carts', cartsRouter);
 server.listen(8080, () => {
   console.log('Listening puerto 8080');
 });
+
 
 mongoose.connect(mongooseUri)
   .then(() => console.log('MongoDB Connected...'))

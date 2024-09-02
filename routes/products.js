@@ -82,6 +82,8 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+
+
 // Ruta PUT /api/products/:id para actualizar un producto por ID
 router.put('/:id', async (req, res) => {
   try {
