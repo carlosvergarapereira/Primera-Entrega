@@ -1,13 +1,70 @@
-<h1>{{nombre}}</h1>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Producto</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .product-details {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .product-details h1 {
+            color: #333;
+        }
+        .product-details p {
+            margin: 10px 0;
+        }
+        .product-details a {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+        .product-details a:hover {
+            background-color: #2980b9;
+        }
+        form button {
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        form button:hover {
+            background-color: #27ae60;
+        }
+    </style>
+</head>
+<body>
+    <div class="product-details">
+        <h1>{{nombre}}</h1>
+        <p><strong>Precio:</strong> ${{precio}}</p>
+        <p><strong>Categoría:</strong> {{categoria}}</p>
+        <p><strong>Descripción:</strong> {{descripcion}}</p>
+        <p><strong>Disponible:</strong> {{#if estado}}Sí{{else}}No{{/if}}</p>
 
-<p>Precio: ${{precio}}</p>
-<p>Categoría: {{categoria}}</p>
-<p>Descripción: {{descripcion}}</p>
-<p>Disponible: {{#if estado}}Sí{{else}}No{{/if}}</p>
+        <!-- Botón para agregar al carrito -->
+        <form action="/api/carts/{{carritoId}}/products/{{_id}}" method="POST">
+            <button type="submit">Agregar al carrito</button>
+        </form>
 
-<!-- Botón para agregar al carrito -->
-<form action="/api/carts/{{carritoId}}/products/{{_id}}" method="POST">
-  <button type="submit">Agregar al carrito</button>
-</form>
-
-<a href="/products">Volver a la lista de productos</a>
+        <a href="/products">Volver a la lista de productos</a>
+    </div>
+</body>
+</html>

@@ -3,6 +3,11 @@ import Productos from '../models/products.js';
 import Carts from '../models/carts.js'; 
 const router = express.Router();
 
+// Ruta para mostrar la página de creación de productos usando Handlebars
+router.get('/create', (req, res) => {
+  res.render('createProduct', { title: 'Crear Nuevo Producto' }); // Asegúrate de que 'createProduct' es el nombre correcto de tu archivo de vista
+});
+
 // Ruta para mostrar la lista de productos con paginación
 router.get('/products', async (req, res) => {
   const { query, sort = 'asc', page = 1, limit = 10 } = req.query;
@@ -26,6 +31,7 @@ router.get('/products', async (req, res) => {
     .skip((page - 1) * limit)
     .limit(limit)
     .sort({ price: sort === 'asc' ? 1 : -1 });
+    
 
   // Calcular valores para la paginación (por simplicidad, se asume que totalPages, hasPrevPage, etc. ya están definidos)
   const totalProducts = await Productos.countDocuments(filter);

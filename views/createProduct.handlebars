@@ -1,4 +1,3 @@
-{{!-- views/createProduct.handlebars --}}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,48 +12,39 @@
     </header>
 
     <main>
-        <form id="createProductForm">
+        <form id="createProductForm" action="/api/products" method="POST">
             <table>
                 <tr>
-                    <td><label for="title">Título:</label></td>
+                    <td><label for="nombre">Nombre:</label></td>
                     <td>
-                        <input type="text" id="title" name="title" required>
-                        <span id="titleError" style="color: red; display: none;">El título es obligatorio.</span>
+                        <input type="text" id="nombre" name="nombre" required>
+                        <span id="nombreError" style="color: red; display: none;">El nombre es obligatorio.</span>
                     </td>
                 </tr>
                 <tr>
-                    <td><label for="description">Descripción:</label></td>
+                    <td><label for="descripcion">Descripción:</label></td>
                     <td>
-                        <input type="text" id="description" name="description" required>
-                        <span id="descriptionError" style="color: red; display: none;">La descripción es obligatoria.</span>
+                        <input type="text" id="descripcion" name="descripcion" required>
+                        <span id="descripcionError" style="color: red; display: none;">La descripción es obligatoria.</span>
                     </td>
                 </tr>
                 <tr>
-                    <td><label for="code">Código:</label></td>
+                    <td><label for="precio">Precio:</label></td>
                     <td>
-                        <input type="text" id="code" name="code" required>
-                        <span id="codeError" style="color: red; display: none;">El código es obligatorio.</span>
+                        <input type="number" id="precio" name="precio" required min="0">
+                        <span id="precioError" style="color: red; display: none;">El precio es obligatorio y debe ser un valor positivo.</span>
                     </td>
                 </tr>
                 <tr>
-                    <td><label for="price">Precio:</label></td>
+                    <td><label for="categoria">Categoría:</label></td>
                     <td>
-                        <input type="number" id="price" name="price" required min="0">
-                        <span id="priceError" style="color: red; display: none;">El precio es obligatorio y debe ser un valor positivo.</span>
-                    </td>
-                </tr>
-                <tr>
-                    <td><label for="stock">Stock:</label></td>
-                    <td>
-                        <input type="number" id="stock" name="stock" required min="0">
-                        <span id="stockError" style="color: red; display: none;">El stock es obligatorio y debe ser un valor positivo.</span>
-                    </td>
-                </tr>
-                <tr>
-                    <td><label for="category">Categoría:</label></td>
-                    <td>
-                        <input type="text" id="category" name="category" required>
-                        <span id="categoryError" style="color: red; display: none;">La categoría es obligatoria.</span>
+                        <select id="categoria" name="categoria" required>
+                            <option value="electronica">Electrónica</option>
+                            <option value="ropa">Ropa</option>
+                            <option value="hogar">Hogar</option>
+                            <option value="otros">Otros</option>
+                        </select>
+                        <span id="categoriaError" style="color: red; display: none;">La categoría es obligatoria.</span>
                     </td>
                 </tr>
                 <tr>
@@ -71,95 +61,32 @@
         document.getElementById('createProductForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            const title = e.target.title.value.trim();
-            const description = e.target.description.value.trim();
-            const code = e.target.code.value.trim();
-            const price = parseFloat(e.target.price.value);
-            const stock = parseInt(e.target.stock.value);
-            const category = e.target.category.value.trim();
-
-            let isValid = true;
-
-            // Validación del campo título
-            if (!title) {
-                document.getElementById('titleError').style.display = 'block';
-                isValid = false;
-            } else {
-                document.getElementById('titleError').style.display = 'none';
-            }
-
-            // Validación del campo descripción
-            if (!description) {
-                document.getElementById('descriptionError').style.display = 'block';
-                isValid = false;
-            } else {
-                document.getElementById('descriptionError').style.display = 'none';
-            }
-
-            // Validación del campo código
-            if (!code) {
-                document.getElementById('codeError').style.display = 'block';
-                isValid = false;
-            } else {
-                document.getElementById('codeError').style.display = 'none';
-            }
-
-            // Validación del campo precio
-            if (isNaN(price) || price <= 0) {
-                document.getElementById('priceError').style.display = 'block';
-                isValid = false;
-            } else {
-                document.getElementById('priceError').style.display = 'none';
-            }
-
-            // Validación del campo stock
-            if (isNaN(stock) || stock < 0) {
-                document.getElementById('stockError').style.display = 'block';
-                isValid = false;
-            } else {
-                document.getElementById('stockError').style.display = 'none';
-            }
-
-            // Validación del campo categoría
-            if (!category) {
-                document.getElementById('categoryError').style.display = 'block';
-                isValid = false;
-            } else {
-                document.getElementById('categoryError').style.display = 'none';
-            }
-
-            // Si el formulario no es válido, no continuar con la solicitud
-            if (!isValid) {
-                return;
-            }
-
             const formData = {
-            title,
-            description,
-            code,
-            price,
-            stock,
-            category
+                nombre: e.target.nombre.value.trim(),
+                descripcion: e.target.descripcion.value.trim(),
+                precio: parseFloat(e.target.precio.value),
+                categoria: e.target.categoria.value,
+                estado: true // Establecido por defecto en el formulario
             };
 
             const messageDiv = document.getElementById('message');
 
             try {
-            const response = await fetch('/api/products', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            });
+                const response = await fetch(this.action, {
+                    method: this.method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
 
-            if (response.ok) {
-                messageDiv.innerHTML = `<p style="color: green;">Producto creado!</p>`;
-                e.target.reset();
-            } else {
-                const errorData = await response.json();
-                messageDiv.innerHTML = `<p style="color: red;">Error: ${errorData.message}</p>`;
-            }
+                if (response.ok) {
+                    messageDiv.innerHTML = `<p style="color: green;">Producto creado!</p>`;
+                    e.target.reset();
+                } else {
+                    const errorData = await response.json();
+                    messageDiv.innerHTML = `<p style="color: red;">Error: ${errorData.message}</p>`;
+                }
             } catch (error) {
                 console.error('Error:', error);
                 messageDiv.innerHTML = `<p style="color: red;">Ha ocurrido un error.</p>`;
