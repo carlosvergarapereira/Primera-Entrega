@@ -124,6 +124,32 @@ router.post('/', async (req, res) => {
   }
 });
 
+// POST api/carts/:cid/products/:pid
+router.post('/:cid/products/:pid', async (req, res) => {
+  const { cid, pid } = req.params;
+  const { quantity } = req.body;
+
+  try {
+    const cart = await Cart.findById(cid);
+    if (!cart) {
+      return res.status(404).json({ message: 'Carrito no encontrado' });
+    }
+
+    const productIndex = cart.products.findIndex(item => item.product.toString() === pid);
+    if (productIndex === -1) {
+      return res.status(404).json({ message: 'Producto no encontrado en el carrito' });
+    }
+
+    cart.products[productIndex].quantity = quantity;
+    await cart.save();
+
+    res.redirect(`/cart-details/${cid}`); // Redirigir a la vista de detalles del carrito
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error al actualizar la cantidad del producto' });
+  }
+});
+
 // POST /api/carts/add-product/:pid
 router.post('/add-product/:pid', async (req, res) => {
   const { pid } = req.params;
@@ -151,6 +177,41 @@ router.post('/add-product/:pid', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error al agregar el producto al carrito' });
+  }
+});
+
+router.get('/:cid/details', async (req, res) => {
+  const { cid } = req.params;
+
+  try {
+    const cart = await Cart.findById(cid).populate('products.product');
+    if (!cart) {
+      return res.status(404).json({ message: 'Carrito no encontrado' });
+    }
+
+    const total = cart.products.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+
+    res.render('cart-details', { cart, total }); // Renderiza la vista Handlebars
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error al obtener el carrito' });
+  }
+});
+
+router.get('/cart-details', async (req, res) => {
+  try {
+    // Encuentra el primer carrito (o ajusta según tu lógica)
+    const cart = await Cart.findOne().populate('products.product');
+    
+    if (!cart) {
+      return res.status(404).json({ message: 'No se encontró el carrito' });
+    }
+
+    // Renderiza la vista de carrito con los datos del carrito
+    res.render('cart-details', { title: 'Detalles del Carrito', cart });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error al obtener el carrito' });
   }
 });
 

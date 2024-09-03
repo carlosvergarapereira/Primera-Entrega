@@ -80,33 +80,6 @@ router.get('/realtimeproducts', async (req, res) => {
   }
 });
 
-// Ruta para la vista de detalles del carrito
-router.get('/cart-details', async (req, res) => {
-  const cartId = req.query.cid; // Obtén el ID del carrito desde la query string
 
-  if (!cartId) {
-    return res.status(400).send('ID del carrito es requerido');
-  }
-
-  try {
-      const cart = await Cart.findById(cartId).populate('products.product');
-      if (!cart) {
-        return res.status(404).send('Carrito no encontrado');
-      }
-      
-      res.render('cart-details', {
-        products: cart.products.map(item => ({
-          nombre: item.product.nombre,
-          precio: item.product.precio,
-          cantidad: item.quantity,
-          total: item.product.precio * item.quantity,
-          id: item.product._id
-        }))
-      });
-  } catch (error) {
-      console.error('Error al obtener el carrito:', error);
-      res.status(500).send('Error al obtener el carrito');
-  }
-});
 
 export default router;

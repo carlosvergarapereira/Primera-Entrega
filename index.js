@@ -20,7 +20,6 @@ const mongooseUri = process.env.MONGODB_URI;
 
 app.set('io', io);
 
-// Configuración de Handlebars con acceso inseguro a prototipos
 const hbs = create({
   handlebars: allowInsecurePrototypeAccess(Handlebars),
   extname: '.handlebars',
@@ -28,6 +27,9 @@ const hbs = create({
   helpers: {
     json: function (context) {
       return JSON.stringify(context);
+    },
+    calculateTotal: function (products) {
+      return products.reduce((total, item) => total + (item.product.price * item.quantity), 0);
     }
   }
 });
@@ -39,20 +41,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
-
 app.use('/', viewRouter);
-app.get('/', (req, res) => {
-  res.redirect('/');
-});
-
-
 app.use('/api/products', productsRouter);
 app.use('/api/carts', cartsRouter);
+app.use('/cart-details', cartsRouter); 
 
 server.listen(8080, () => {
   console.log('Listening puerto 8080');
 });
-
 
 mongoose.connect(mongooseUri)
   .then(() => console.log('MongoDB Connected...'))
