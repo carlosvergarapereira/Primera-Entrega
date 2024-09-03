@@ -46,7 +46,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/products', productsRouter);
 app.use('/api/carts', cartsRouter);
-app.use('/cart-details', cartsRouter);
+//app.use('/cart-details', cartsRouter);
 
 server.listen(8080, () => {
   console.log('Listening on port 8080');

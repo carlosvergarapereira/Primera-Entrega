@@ -3,70 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalles del CarritosSS</title>
+    <title>Detalles del Carrito</title>
     <link rel="stylesheet" href="/css/styles.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0px;
-        }
-        .header {
-            background-color: #fff;
-            padding: 10px 20px;
-            text-align: center;
-            border-bottom: 1px solid #ddd;
-        }
-        .main {
-            background-color: #fff;
-            padding: 20px;
-            margin-top: 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        .cart-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
-            margin-bottom: 10px;
-        }
-        .cart-item:last-child {
-            border-bottom: none;
-        }
-        .item-details {
-            flex-grow: 1;
-        }
-        .item-details h2 {
-            margin: 0 0 5px 0;
-            font-size: 20px;
-            color: #e74c3c;
-        }
-        .item-details p {
-            margin: 5px 0;
-        }
-        .item-details input[type="number"] {
-            width: 60px;
-            padding: 5px;
-        }
-        .action-buttons {
-            text-align: right;
-        }
-        button {
-            background-color: #e74c3c;
-            color: #fff;
-            border: none;
-            padding: 10px 15px;
-            cursor: pointer;
-            border-radius: 5px;
-            font-size: 14px;
-            transition: background-color 0.3s ease;
-        }
-        button:hover {
-            background-color: #c0392b;
-        }
+        /* Mantén el estilo existente */
     </style>
 </head>
 <body>
@@ -82,12 +22,13 @@
                     <h2>{{nombre}}</h2>
                     <p>Precio: ${{precio}}</p>
                     <p>Cantidad:
-                        <input type="number" value="{{cantidad}}" min="1" onchange="updateQuantity('{{id}}', this.value)">
+                        <input type="number" value="{{cantidad}}" min="1" onchange="updateQuantity('{{../cartId}}', '{{id}}', this.value)">
                     </p>
                     <p>Total: ${{total}}</p>
                 </div>
                 <div class="action-buttons" id="eliminar">
-                    <button onclick="removeProduct('{{id_eliminar}}')">Eliminar</button>
+                    <!-- Llama a removeProduct con el ID del carrito y el ID del producto -->
+                    <button onclick="removeProduct('{{../cartId}}', '{{id}}')">Eliminar</button>
                 </div>
             </div>
             {{/each}}
@@ -98,5 +39,50 @@
         {{/if}}
     </main>
 
+    <script>
+        // Función para reducir la cantidad de un producto en el carrito
+        async function removeProduct(cartId, productId) {
+            try {
+                const response = await fetch(`/api/carts/${cartId}/products/${productId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    // Si la eliminación es exitosa, recarga la página para reflejar los cambios
+                    location.reload();
+                } else {
+                    // Manejar el error
+                    alert('Error al reducir la cantidad del producto');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Hubo un problema al intentar reducir la cantidad del producto.');
+            }
+        }
+
+        // Función para actualizar la cantidad de un producto en el carrito
+        async function updateQuantity(cartId, productId, quantity) {
+            try {
+                const response = await fetch(`/api/carts/${cartId}/products/${productId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ quantity })
+                });
+
+                if (response.ok) {
+                    // Si la actualización es exitosa, recarga la página para reflejar los cambios
+                    location.reload();
+                } else {
+                    // Manejar el error
+                    alert('Error al actualizar la cantidad del producto');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Hubo un problema al intentar actualizar la cantidad.');
+            }
+        }
+    </script>
 </body>
 </html>
