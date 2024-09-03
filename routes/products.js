@@ -110,7 +110,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // Ruta DELETE /api/products/:id para eliminar un producto por ID
-router.delete('/products/:id', async (req, res) => {
+router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   try {
       const product = await Productos.findByIdAndDelete(id);
