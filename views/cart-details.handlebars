@@ -3,72 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{title}}</title>
+    <title>Detalles del Carrito</title>
     <link rel="stylesheet" href="/css/styles.css">
     <style>
-        .cart-details {
-            padding: 20px;
-        }
-        .cart-details table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .cart-details th, .cart-details td {
+        .cart-item {
+            background-color: #fff;
             border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .cart-item h2 {
+            margin: 0;
+            font-size: 20px;
+            color: #e74c3c;
+        }
+        .cart-item p {
+            margin: 5px 0;
+        }
+        .cart-item button {
+            background-color: #e74c3c;
+            color: #fff;
+            border: none;
             padding: 10px;
-            text-align: center;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
         }
-        .cart-details th {
-            background-color: #f4f4f4;
-        }
-        .cart-details .total {
-            font-weight: bold;
+        .cart-item button:hover {
+            background-color: #c0392b;
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>{{title}}</h1>
+        <h1>Carrito de Compras</h1>
     </header>
 
     <main>
-        <div class="cart-details">
-            <h2>Detalles del Carrito</h2>
-            {{#if cart.products.length}}
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Producto</th>
-                            <th>Cantidad</th>
-                            <th>Precio</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {{#each cart.products}}
-                            <tr>
-                                <td>{{this.product.title}}</td>
-                                <td>
-                                    <form action="/api/carts/{{../cart._id}}/products/{{this.product._id}}" method="POST">
-                                        <input type="number" name="quantity" value="{{this.quantity}}" min="1" required>
-                                        <button type="submit">Actualizar</button>
-                                    </form>
-                                </td>
-                                <td>${{this.product.price}}</td>
-                                <td>${{this.quantity * this.product.price}}</td>
-                            </tr>
-                        {{/each}}
-                    </tbody>
-                </table>
-                <p class="total">Total: ${{calculateTotal cart.products}}</p>
-            {{else}}
-                <p>No hay productos en el carrito.</p>
-            {{/if}}
+        <h1>Detalles del Carrito</h1>
+        <div class="cart-list">
+            {{#each products}}
+                <div classParece que la respuesta anterior fue interrumpida. Aquí está la versión completa del archivo `cart-details.handlebars` para que puedas visualizar correctamente el carrito:
+
+### **Archivo `views/cart-details.handlebars`**
+Este archivo es el que se encargará de mostrar los detalles del carrito, incluyendo la posibilidad de editar la cantidad de productos y ver el total.
+
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles del Carrito</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        .cart-item {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .cart-item h2 {
+            margin: 0;
+            font-size: 20px;
+            color: #e74c3c;
+        }
+        .cart-item p {
+            margin: 5px 0;
+        }
+        .cart-item button {
+            background-color: #e74c3c;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+        .cart-item button:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Carrito de Compras</h1>
+    </header>
+
+    <main>
+        <h1>Detalles del Carrito</h1>
+        <div class="cart-list">
+            {{#each products}}
+                <div class="cart-item">
+                    <h2>{{nombre}}</h2>
+                    <p>Precio: ${{precio}}</p>
+                    <p>Cantidad: 
+                        <input type="number" value="{{cantidad}}" onchange="updateQuantity('{{id}}', this.value)">
+                    </p>
+                    <p>Total: ${{total}}</p>
+                    <button onclick="removeProduct('{{id}}')">Eliminar</button>
+                </div>
+            {{/each}}
         </div>
+
+        <a href="/products">Continuar comprando</a>
     </main>
 
     <footer>
         <p>&copy; Septiembre 2024 - Carlos Vergara P</p>
     </footer>
+
+    <script>
+        function updateQuantity(productId, quantity) {
+            fetch(`/api/carts/${productId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ quantity })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Cantidad actualizada:', data);
+                location.reload();
+            })
+            .catch(error => console.error('Error al actualizar la cantidad:', error));
+        }
+
+        function removeProduct(productId) {
+            fetch(`/api/carts/${productId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Producto eliminado:', data);
+                location.reload();
+            })
+            .catch(error => console.error('Error al eliminar el producto:', error));
+        }
+    </script>
 </body>
 </html>
