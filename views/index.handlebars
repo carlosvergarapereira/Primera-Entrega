@@ -1,33 +1,102 @@
-<h1>Lista de Productos</h1>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Productos</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        .product-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        .product-item {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            max-width: 300px;
+            text-align: center;
+            margin: 10px;
+            transition: box-shadow 0.3s ease;
+        }
+        .product-item h2 {
+            font-size: 18px;
+            color: #e74c3c;
+            margin-bottom: 10px;
+        }
+        .product-item p {
+            margin: 5px 0;
+        }
+        .product-item button {
+            background-color: #e74c3c;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+        .product-item button:hover {
+            background-color: #c0392b;
+        }
+        .pagination {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .pagination a {
+            color: #e74c3c;
+            text-decoration: none;
+            font-size: 16px;
+            margin: 0 10px;
+        }
+        .pagination a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Lista de Productos</h1>
+    </header>
 
-<div class="product-list">
-  {{#each payload}}
-    <div class="product-item">
-      <h2>{{nombre}}</h2>
-      <p>Precio: ${{precio}}</p>
-      <p>Categoría: {{categoria}}</p>
-      <p>{{descripcion}}</p>
-      
-      <!-- Botón para ver detalles del producto -->
-      <a href="/products/{{_id}}">Ver detalles</a>
+    <main>
+        <div class="product-list">
+            {{#each payload}}
+                <div class="product-item">
+                    <h2>{{nombre}}</h2>
+                    <p>Precio: ${{precio}}</p>
+                    <p>Categoría: {{categoria}}</p>
+                    <p>{{descripcion}}</p>
+                    
+                    <!-- Botón para ver detalles del producto -->
+                    <a href="/products/{{_id}}">Ver detalles</a>
 
-      <!-- Botón para agregar al carrito directamente -->
-      <form action="/api/carts/{{carritoId}}/products/{{_id}}" method="POST">
-        <button type="submit">Agregar al carrito</button>
-      </form>
-    </div>
-  {{/each}}
-</div>
+                    <!-- Botón para agregar al carrito directamente -->
+                    <form action="/api/carts/{{carritoId}}/products/{{_id}}" method="POST">
+                        <button type="submit">Agregar al carrito</button>
+                    </form>
+                </div>
+            {{/each}}
+        </div>
 
-<!-- Paginación -->
-<div class="pagination">
-  {{#if hasPrevPage}}
-    <a href="{{prevLink}}">Anterior</a>
-  {{/if}}
+        <!-- Paginación -->
+        <div class="pagination">
+            {{#if hasPrevPage}}
+                <a href="{{prevLink}}">Anterior</a>
+            {{/if}}
 
-  Página {{page}} de {{totalPages}}
+            Página {{page}} de {{totalPages}}
 
-  {{#if hasNextPage}}
-    <a href="{{nextLink}}">Siguiente</a>
-  {{/if}}
-</div>
+            {{#if hasNextPage}}
+                <a href="{{nextLink}}">Siguiente</a>
+            {{/if}}
+        </div>
+    </main>
+
+</body>
+</html>

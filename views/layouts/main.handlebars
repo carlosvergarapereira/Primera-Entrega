@@ -4,7 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{title}}</title>
-    <link rel="stylesheet" href="/css/styles.css"> 
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        .cart-button {
+            background-color: red;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-left: 20px;
+        }
+        .cart-button:hover {
+            background-color: darkred;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -14,7 +27,7 @@
                 <li><a href="/products">Productos</a></li>
                 <li><a href="/realtimeproducts">Productos en tiempo real</a></li>
                 <li><a href="/create">Crear Producto</a></li>
-                <li><a href="/carts" class="cart-link">Carritos</a></li> <!-- Nuevo enlace para los carritos -->
+                <li><a href="/cart-details" class="cart-button">Carritos</a></li>
             </ul>
         </nav>
     </header>
@@ -24,12 +37,11 @@
             <div class="main-content">
                 {{{body}}} <!-- Aquí se inyectará el contenido de las vistas específicas -->
             </div>
-            <!-- El sidebar de carritos se puede eliminar ya que el enlace está en el nav -->
         </div>
     </main>
 
     <footer>
-        <p>&copy; Agosto 2024 - Carlos Vergara P</p>
+        <p>&copy; Septiembre 2024 - Carlos Vergara P</p>
     </footer>
 </body>
 </html>
