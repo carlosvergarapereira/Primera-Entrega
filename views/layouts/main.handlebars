@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{title}}</title>
-    <link rel="stylesheet" href="/css/styles.css"> <!-- Link al archivo CSS -->
+    <link rel="stylesheet" href="/css/styles.css"> 
 </head>
 <body>
     <header>
@@ -14,12 +14,18 @@
                 <li><a href="/products">Productos</a></li>
                 <li><a href="/realtimeproducts">Productos en tiempo real</a></li>
                 <li><a href="/create">Crear Producto</a></li>
+                <li><a href="/carts" class="cart-link">Carritos</a></li> <!-- Nuevo enlace para los carritos -->
             </ul>
         </nav>
     </header>
 
     <main>
-        {{{body}}} <!-- Aquí se inyectará el contenido de las vistas específicas -->
+        <div class="content">
+            <div class="main-content">
+                {{{body}}} <!-- Aquí se inyectará el contenido de las vistas específicas -->
+            </div>
+            <!-- El sidebar de carritos se puede eliminar ya que el enlace está en el nav -->
+        </div>
     </main>
 
     <footer>

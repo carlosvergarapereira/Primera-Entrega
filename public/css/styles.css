@@ -45,70 +45,18 @@ nav ul li a:hover {
     text-decoration: underline;
 }
 
+.cart-link {
+    background-color: #e74c3c;
+    padding: 10px 20px;
+    border-radius: 5px;
+    color: #fff;
+}
+
 /* Main Content Styles */
 main {
     padding: 20px;
     max-width: 800px;
     margin: 20px auto;
-}
-
-/* Product List Styles */
-.product-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.product-item {
-    background-color: #fff;
-    border: 1px solid #ddd;
-    margin: 15px 0;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s ease;
-}
-
-.product-item:hover {
-    background-color: #f9f9f9;
-}
-
-.product-item h2 {
-    margin-top: 0;
-    font-size: 20px;
-    color: #e74c3c;
-}
-
-.product-item p {
-    margin: 10px 0;
-}
-
-.product-item img {
-    max-width: 100px;
-    margin-right: 20px;
-    float: left;
-}
-
-.product-item button {
-    background-color: #e74c3c;
-    color: #fff;
-    border: none;
-    padding: 10px 15px;
-    cursor: pointer;
-    border-radius: 5px;
-    font-size: 14px;
-    transition: background-color 0.3s ease;
-}
-
-.product-item button:hover {
-    background-color: #c0392b;
-}
-
-/* Clearfix for Floats */
-.product-item::after {
-    content: "";
-    display: table;
-    clear: both;
 }
 
 /* Footer Styles */
