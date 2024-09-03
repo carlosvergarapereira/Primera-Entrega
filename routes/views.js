@@ -80,6 +80,30 @@ router.get('/realtimeproducts', async (req, res) => {
   }
 });
 
+// Ruta para mostrar la página de detalles del carrito
+router.get('/cart-details', async (req, res) => {
+  try {
+      const cart = await Cart.findOne(); // Obtén el carrito. Considera manejar usuarios o sesiones específicas
+      if (!cart) {
+          // Si no hay un carrito, tal vez quieras enviar al usuario a una página de "Carrito Vacío"
+          return res.render('cart-details', { products: [], title: "Detalles del Carrito" });
+      }
+      // Preparar productos y otros datos necesarios para pasar a la vista
+      const products = cart.products.map(item => ({
+          nombre: item.product.nombre, // Asegúrate de que estas propiedades existen
+          precio: item.product.precio,
+          cantidad: item.quantity,
+          total: item.product.precio * item.quantity,
+          id: item.product._id
+      }));
+
+      res.render('cart-details', { products: products, title: "Detalles del Carrito" }); // Envía los datos a la vista
+  } catch (error) {
+      console.error('Error al obtener el carrito:', error);
+      res.status(500).send('Error al obtener los detalles del carrito');
+  }
+});
+
 
 
 export default router;
