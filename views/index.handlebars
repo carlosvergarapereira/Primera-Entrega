@@ -31,18 +31,34 @@
         .product-item p {
             margin: 5px 0;
         }
+        .product-item a {
+            display: block;
+            background-color: #f1c40f; /* Color amarillo */
+            color: #fff;
+            text-decoration: none;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+        .product-item a:hover {
+            background-color: #f39c12; /* Color amarillo más oscuro al pasar el ratón */
+        }
         .product-item button {
-            background-color: #e74c3c;
+            background-color: #2ecc71; /* Color verde */
             color: #fff;
             border: none;
             padding: 10px;
             cursor: pointer;
-            border-radius: 5px;
+            border-radius: 0; /* Sin bordes redondeados, cuadrado */
             font-size: 14px;
             transition: background-color 0.3s ease;
+            width: 100%; /* Ocupa todo el ancho del contenedor */
+            box-sizing: border-box; /* Incluye padding en el ancho total */
         }
         .product-item button:hover {
-            background-color: #c0392b;
+            background-color: #27ae60; /* Color verde más oscuro al pasar el mouse */
         }
         .pagination {
             text-align: center;
@@ -77,7 +93,7 @@
                     <a href="/product-details/{{_id}}">Ver detalles</a>
 
                     <!-- Botón para agregar al carrito directamente -->
-                    <form action="/api/carts/{{carritoId}}/products/{{_id}}" method="POST">
+                    <form action="/api/carts/add-product/{{_id}}" method="POST">
                         <button type="submit">Agregar al carrito</button>
                     </form>
                 </div>

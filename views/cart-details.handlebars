@@ -45,13 +45,13 @@
     <main>
         <h1>Detalles del Carrito</h1>
         <div class="cart-list">
-            {{#each products}}
+            {{#each cart.products}}
                 <div class="cart-item">
-                    <h2>{{nombre}}</h2>
-                    <p>Precio: ${{precio}}</p>
-                    <p>Cantidad: {{cantidad}}</p>
-                    <p>Total: ${{total}}</p>
-                    <button onclick="updateQuantity('{{id}}', 1)">Agregar una unidad</button>
+                    <h2>{{product.name}}</h2> <!-- Asegúrate de que estas propiedades existan en el modelo -->
+                    <p>Precio: ${{product.price}}</p>
+                    <p>Cantidad: {{quantity}}</p>
+                    <p>Total: ${{product.price this.quantity}}</p>
+                    <button onclick="updateQuantity('{{product._id}}', 1)">Agregar una unidad</button>
                 </div>
             {{/each}}
         </div>
@@ -59,13 +59,10 @@
         <a href="/products">Continuar comprando</a>
     </main>
 
-    <footer>
-        <p>&copy; Septiembre 2024 - Carlos Vergara P</p>
-    </footer>
 
     <script>
         function updateQuantity(productId, change) {
-            fetch(`/api/cart/update/${productId}`, {
+            fetch(`/api/carts/${productId}/update`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',

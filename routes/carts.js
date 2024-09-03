@@ -1,6 +1,6 @@
 import express from 'express';
 import Cart from '../models/carts.js';
-import Productos from '../models/products.js'; // Asegúrate de importar el modelo de Productos
+import Product from '../models/products.js'; // Asegúrate de importar el modelo de Productos
 
 const router = express.Router();
 
