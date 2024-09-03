@@ -51,7 +51,7 @@
             border: none;
             padding: 10px;
             cursor: pointer;
-            border-radius: 0; /* Sin bordes redondeados, cuadrado */
+            border-radius: 5px;
             font-size: 14px;
             transition: background-color 0.3s ease;
             width: 100%; /* Ocupa todo el ancho del contenedor */
@@ -73,6 +73,12 @@
         .pagination a:hover {
             text-decoration: underline;
         }
+        #message {
+            color: green;
+            font-size: 16px;
+            text-align: center;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -81,6 +87,7 @@
     </header>
 
     <main>
+        <div id="message"></div>
         <div class="product-list">
             {{#each payload}}
                 <div class="product-item">
@@ -93,7 +100,7 @@
                     <a href="/product-details/{{_id}}">Ver detalles</a>
 
                     <!-- Botón para agregar al carrito directamente -->
-                    <form action="/api/carts/add-product/{{_id}}" method="POST">
+                    <form class="add-to-cart-form" action="/api/carts/add-product/{{_id}}" method="POST">
                         <button type="submit">Agregar al carrito</button>
                     </form>
                 </div>
@@ -114,5 +121,44 @@
         </div>
     </main>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.add-to-cart-form').forEach(form => {
+                form.addEventListener('submit', function(event) {
+                    event.preventDefault(); // Prevent form from submitting the traditional way
+                    let actionURL = this.action;
+
+                    fetch(actionURL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json' // Asegúrate de que esto está configurado si es necesario
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        const messageElement = document.getElementById('message');
+                        if (data.success) {
+                            messageElement.textContent = data.message;
+                            messageElement.style.color = 'green';
+                        } else {
+                            messageElement.textContent = data.message;
+                            messageElement.style.color = 'red';
+                        }
+                    })
+                    .catch(error => {
+                        const messageElement = document.getElementById('message');
+                        messageElement.textContent = 'Error al procesar la solicitud: ' + error.message;
+                        messageElement.style.color = 'red';
+                    });
+
+                });
+            });
+        });
+    </script>
 </body>
 </html>

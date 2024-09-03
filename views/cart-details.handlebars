@@ -46,60 +46,6 @@
         <h1>Detalles del Carrito</h1>
         <div class="cart-list">
             {{#each products}}
-                <div classParece que la respuesta anterior fue interrumpida. Aquí está la versión completa del archivo `cart-details.handlebars` para que puedas visualizar correctamente el carrito:
-
-### **Archivo `views/cart-details.handlebars`**
-Este archivo es el que se encargará de mostrar los detalles del carrito, incluyendo la posibilidad de editar la cantidad de productos y ver el total.
-
-```html
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalles del Carrito</title>
-    <link rel="stylesheet" href="/css/styles.css">
-    <style>
-        .cart-item {
-            background-color: #fff;
-            border: 1px solid #ddd;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        .cart-item h2 {
-            margin: 0;
-            font-size: 20px;
-            color: #e74c3c;
-        }
-        .cart-item p {
-            margin: 5px 0;
-        }
-        .cart-item button {
-            background-color: #e74c3c;
-            color: #fff;
-            border: none;
-            padding: 10px;
-            cursor: pointer;
-            border-radius: 5px;
-            font-size: 14px;
-            transition: background-color 0.3s ease;
-        }
-        .cart-item button:hover {
-            background-color: #c0392b;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <h1>Carrito de Compras</h1>
-    </header>
-
-    <main>
-        <h1>Detalles del Carrito</h1>
-        <div class="cart-list">
-            {{#each products}}
                 <div class="cart-item">
                     <h2>{{nombre}}</h2>
                     <p>Precio: ${{precio}}</p>
@@ -137,7 +83,7 @@ Este archivo es el que se encargará de mostrar los detalles del carrito, incluy
         }
 
         function removeProduct(productId) {
-            fetch(`/api/carts/${productId}`, {
+            fetch(`/api/carts/{{id}}/products/${productId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
