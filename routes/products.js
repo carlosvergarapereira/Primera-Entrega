@@ -68,6 +68,17 @@ router.post('/', async (req, res) => {
   }
 });
 
+// Ruta GET /products para mostrar la vista de productos
+router.get('/', async (req, res) => {
+  try {
+    const productos = await Productos.find(); // Obtiene todos los productos sin filtros
+    res.render('index', { payload: productos }); // Renderiza la vista 'index.handlebars' pasando los productos
+  } catch (error) {
+    console.error('Error al obtener los productos:', error);
+    res.status(500).send('Error en el servidor');
+  }
+});
+
 // Ruta GET /api/products/:id para obtener un producto por ID
 router.get('/:id', async (req, res) => {
   try {

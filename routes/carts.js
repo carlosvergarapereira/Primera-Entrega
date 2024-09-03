@@ -112,4 +112,46 @@ router.get('/:cid', async (req, res) => {
   }
 });
 
+// POST /api/carts
+router.post('/', async (req, res) => {
+  try {
+    const newCart = new Cart({ products: [] });
+    await newCart.save();
+    res.status(201).json(newCart);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error al crear el carrito' });
+  }
+});
+
+// POST /api/carts/add-product/:pid
+router.post('/add-product/:pid', async (req, res) => {
+  const { pid } = req.params;
+
+  try {
+    let cart = await Cart.findOne({}); // Busca el primer carrito o crea uno nuevo
+
+    if (!cart) {
+      // Si no hay carritos existentes, crea uno nuevo
+      cart = new Cart({ products: [{ product: pid, quantity: 1 }] });
+      await cart.save();
+      return res.status(201).json(cart);
+    }
+
+    // Añade el producto al carrito existente
+    const productIndex = cart.products.findIndex(item => item.product.toString() === pid);
+    if (productIndex === -1) {
+      cart.products.push({ product: pid, quantity: 1 });
+    } else {
+      cart.products[productIndex].quantity += 1;
+    }
+
+    await cart.save();
+    res.status(200).json(cart);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error al agregar el producto al carrito' });
+  }
+});
+
 export default router;

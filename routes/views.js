@@ -22,6 +22,7 @@ router.get('/products', async (req, res) => {
       ],
     };
   }
+    
 
   // Lógica para filtrar, ordenar y paginar los productos
   const products = await Productos.find(filter)
@@ -46,6 +47,25 @@ router.get('/products', async (req, res) => {
     nextLink,
   });
 });
+
+
+// GET /product-details/:pid
+router.get('/product-details/:pid', async (req, res) => {
+  const { pid } = req.params;
+
+  try {
+    const product = await Productos.findById(pid);
+    if (!product) {
+      return res.status(404).render('error', { message: 'Producto no encontrado' });
+    }
+
+    res.render('product-details', { product });
+  } catch (error) {
+    console.error(error);
+    res.status(500).render('error', { message: 'Error al obtener el producto' });
+  }
+});
+
 
 // Ruta para servir la página de productos en tiempo real, cargando todos los productos disponibles
 router.get('/realtimeproducts', async (req, res) => {

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{nombre}}</title>
+    <title>Detalles del Producto</title>
     <link rel="stylesheet" href="/css/styles.css">
     <style>
         table {
@@ -27,7 +27,6 @@
 </head>
 <body>
     <header>
-      <p>Texto de prueba para verificar cambios en la vista</p>
         <h1>Detalles del Producto</h1>
     </header>
 
@@ -36,30 +35,28 @@
             <table>
                 <tr>
                     <th>Nombre</th>
-                    <td>{{nombre}}</td>
+                    <td>{{product.nombre}}</td>
                 </tr>
                 <tr>
                     <th>Precio</th>
-                    <td>${{precio}}</td>
+                    <td>${{product.precio}}</td>
                 </tr>
                 <tr>
                     <th>Categoría</th>
-                    <td>{{categoria}}</td>
+                    <td>{{product.categoria}}</td>
                 </tr>
                 <tr>
                     <th>Descripción</th>
-                    <td>{{descripcion}}</td>
+                    <td>{{product.descripcion}}</td>
                 </tr>
                 <tr>
                     <th>Disponible</th>
-                    <td>{{#if estado}}Sí{{else}}No{{/if}}</td>
+                    <td>{{#if product.estado}}Sí{{else}}No{{/if}}</td>
                 </tr>
             </table>
 
             <!-- Formulario para agregar al carrito -->
-            <form action="/api/carts/add-product" method="POST">
-                <input type="hidden" name="productId" value="{{_id}}">
-                <input type="hidden" name="carritoId" value="{{carritoId}}">
+            <form action="/api/carts/add-product/{{product._id}}" method="POST">
                 <button type="submit">Agregar al carrito</button>
             </form>
         </div>
@@ -67,8 +64,5 @@
         <a href="/products">Volver a la lista de productos</a>
     </main>
 
-    <footer>
-        <p>&copy; Agosto 2024 - Carlos Vergara P</p>
-    </footer>
 </body>
 </html>
