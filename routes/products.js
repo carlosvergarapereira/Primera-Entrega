@@ -110,16 +110,17 @@ router.put('/:id', async (req, res) => {
 });
 
 // Ruta DELETE /api/products/:id para eliminar un producto por ID
-router.delete('/:id', async (req, res) => {
+router.delete('/products/:id', async (req, res) => {
+  const { id } = req.params;
   try {
-    const deletedProduct = await Productos.findByIdAndDelete(req.params.id);
-    if (!deletedProduct) {
-      return res.status(404).json({ message: 'Producto no encontrado' });
-    }
-    res.json({ message: 'Producto eliminado' });
+      const product = await Productos.findByIdAndDelete(id);
+      if (!product) {
+          return res.status(404).json({ message: 'Producto no encontrado' });
+      }
+      res.json({ message: 'Producto eliminado con éxito' });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error al eliminar el producto' });
+      console.error('Error al eliminar producto:', error);
+      res.status(500).json({ message: 'Error al eliminar producto', error: error.message });
   }
 });
 

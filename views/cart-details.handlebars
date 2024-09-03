@@ -3,99 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalles del Carrito</title>
+    <title>Detalles del CarritosSS</title>
     <link rel="stylesheet" href="/css/styles.css">
     <style>
-        .cart-item {
-            background-color: #fff;
-            border: 1px solid #ddd;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        .cart-item h2 {
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
             margin: 0;
+            padding: 0px;
+        }
+        .header {
+            background-color: #fff;
+            padding: 10px 20px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+        .main {
+            background-color: #fff;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+        .item-details {
+            flex-grow: 1;
+        }
+        .item-details h2 {
+            margin: 0 0 5px 0;
             font-size: 20px;
             color: #e74c3c;
         }
-        .cart-item p {
+        .item-details p {
             margin: 5px 0;
         }
-        .cart-item button {
+        .item-details input[type="number"] {
+            width: 60px;
+            padding: 5px;
+        }
+        .action-buttons {
+            text-align: right;
+        }
+        button {
             background-color: #e74c3c;
             color: #fff;
             border: none;
-            padding: 10px;
+            padding: 10px 15px;
             cursor: pointer;
             border-radius: 5px;
             font-size: 14px;
             transition: background-color 0.3s ease;
         }
-        .cart-item button:hover {
+        button:hover {
             background-color: #c0392b;
-        }
-        input[type="number"] {
-            width: 60px;
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Carrito de Compras</h1>
+    <header class="header">
+        <h1>Detalles del Carrito</h1>
     </header>
 
-    <main>
-        <h1>Detalles del Carrito</h1>
-        <div class="cart-list">
+    <main class="main">
+        {{#if products.length}}
             {{#each products}}
-            <div class="cart-item" id="product-{{id}}">
-                <h2>{{nombre}}</h2>
-                <p>Precio: ${{precio}}</p>
-                <p>Cantidad: 
-                    <input type="number" value="{{cantidad}}" onchange="updateQuantity('{{id}}', this.value)">
-                </p>
-                <p id="product-{{id}}-total">Total: ${{total}}</p>
-                <button onclick="removeProduct('{{id}}')">Eliminar</button>
+            <div class="cart-item">
+                <div class="item-details">
+                    <h2>{{nombre}}</h2>
+                    <p>Precio: ${{precio}}</p>
+                    <p>Cantidad:
+                        <input type="number" value="{{cantidad}}" min="1" onchange="updateQuantity('{{id}}', this.value)">
+                    </p>
+                    <p>Total: ${{total}}</p>
+                </div>
+                <div class="action-buttons">
+                    <button onclick="removeProduct('{{id}}')">Eliminar</button>
+                </div>
             </div>
             {{/each}}
-        </div>
-
-        <a href="/products">Continuar comprando</a>
+            <h2>Total del Carrito: ${{totalPrice}}</h2>
+        {{else}}
+            <p>Tu carrito está vacío.</p>
+            <a href="/products">Volver a la tienda</a>
+        {{/if}}
     </main>
 
-
-    <script>
-        function updateQuantity(productId, quantity) {
-            fetch(`/api/carts/${cartId}/products/${productId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ quantity })
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Cantidad actualizada:', data);
-                document.querySelector(`#product-${productId}-total`).textContent = 'Total: $' + (data.precio * data.cantidad);
-            })
-            .catch(error => console.error('Error al actualizar la cantidad:', error));
-        }
-
-        function removeProduct(productId) {
-            fetch(`/api/carts/${cartId}/products/${productId}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Producto eliminado:', data);
-                document.querySelector(`#product-${productId}`).remove();
-            })
-            .catch(error => console.error('Error al eliminar el producto:', error));
-        }
-    </script>
 </body>
 </html>

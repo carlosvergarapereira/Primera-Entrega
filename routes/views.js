@@ -13,7 +13,7 @@ router.get('/products', async (req, res) => {
   const { query, sort = 'asc', page = 1, limit = 10 } = req.query;
   let filter = {};
 
-  // Si se proporciona un query parameter, añadirlo al filtro
+  // Si se proporciona un query parameter
   if (query) {
     filter = {
       $or: [
@@ -85,7 +85,7 @@ router.get('/cart-details', async (req, res) => {
   try {
       const cart = await Cart.findOne(); // Obtén el carrito. Considera manejar usuarios o sesiones específicas
       if (!cart) {
-          // Si no hay un carrito, tal vez quieras enviar al usuario a una página de "Carrito Vacío"
+          // Si no hay un carrito
           return res.render('cart-details', { products: [], title: "Detalles del Carrito" });
       }
       // Preparar productos y otros datos necesarios para pasar a la vista

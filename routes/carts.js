@@ -5,26 +5,34 @@ import Product from '../models/products.js';
 const router = express.Router();
 
 // GET /cart-details para mostrar los detalles del carrito
+// Ruta para mostrar la página de detalles del carrito
 router.get('/cart-details', async (req, res) => {
   try {
-    // Busca el único carrito existente en la base de datos
-    const cart = await Cart.findOne().populate('products.product');
-    if (!cart) {
-      return res.status(404).render('404', { message: 'Carrito no encontrado' });
-    }
-
-    res.render('cart-details', {
-      products: cart.products.map(item => ({
-        nombre: item.product.nombre,
-        precio: item.product.precio,
-        cantidad: item.quantity,
-        total: item.product.precio * item.quantity,
-        id: item.product._id
-      }))
-    });
+      const cart = await Cart.findOne().populate('products.product');
+      if (!cart || cart.products.length === 0) {  // Verifica si el carrito no existe o está vacío
+          // Renderiza la vista con un mensaje indicando que el carrito está vacío
+          return res.render('cart-details', { products: [], title: "Detalles del Carrito", message: "Tu carrito está vacío." });
+      }
+      
+      // Prepara los productos y otros datos necesarios para pasar a la vista
+      const products = cart.products.map(item => ({
+          nombre: item.product.nombre,
+          precio: item.product.precio,
+          cantidad: item.quantity,
+          total: item.product.precio * item.quantity,
+          id: item.product._id
+      }));
+      
+      const totalPrice = products.reduce((acc, curr) => acc + curr.total, 0);  // Calcula el precio total del carrito
+      
+      res.render('cart-details', {
+          products: products,
+          title: "Detalles del Carrito",
+          totalPrice: totalPrice
+      });  // Envía los datos a la vista
   } catch (error) {
-    console.error('Error al obtener el carrito:', error);
-    res.status(500).render('error', { message: 'Error al obtener el carrito' });
+      console.error('Error al obtener el carrito:', error);
+      res.status(500).send('Error al obtener los detalles del carrito');
   }
 });
 

@@ -126,7 +126,7 @@
             });
 
             function deleteProduct(productId) {
-                fetch(`/api/products/${productId}`, { method: 'DELETE' })
+                fetch(`/products/${productId}`, { method: 'DELETE' })
                 .then(response => response.json())
                 .then(data => {
                     console.log('Producto eliminado:', data);
