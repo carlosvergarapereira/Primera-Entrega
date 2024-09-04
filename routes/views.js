@@ -83,24 +83,37 @@ router.get('/realtimeproducts', async (req, res) => {
 // Ruta para mostrar la página de detalles del carrito
 router.get('/cart-details', async (req, res) => {
   try {
-      const cart = await Cart.findOne(); // Obtén el carrito. Considera manejar usuarios o sesiones específicas
-      if (!cart) {
-          // Si no hay un carrito
-          return res.render('cart-details', { products: [], title: "Detalles del Carrito" });
-      }
-      // Preparar productos y otros datos necesarios para pasar a la vista
-      const products = cart.products.map(item => ({
-          nombre: item.product.nombre, // Asegúrate de que estas propiedades existen
-          precio: item.product.precio,
-          cantidad: item.quantity,
-          total: item.product.precio * item.quantity,
-          id: item.product._id
-      }));
+    const cart = await Cart.findOne().populate('products.product'); // Asegúrate de que estás haciendo el populate correctamente
 
-      res.render('cart-details', { cartId: cart._id,products: products, title: "Detalles del Carrito",precio: products.precio}); // Envía los datos a la vista
+    if (!cart || cart.products.length === 0) {
+      return res.render('cart-details', { products: [], title: "Detalles del Carrito" });
+    }
+
+    // Mapeo de productos, validando que el precio y el producto existan
+    const products = cart.products.map(item => {
+      if (!item.product) {
+        return null;  // Maneja el caso cuando el producto no existe
+      }
+      return {
+        nombre: item.product.nombre || 'Producto sin nombre',  // Fallback si falta el nombre
+        precio: item.product.precio || 0,  // Fallback si el precio es nulo
+        cantidad: item.quantity,
+        total: (item.product.precio || 0) * item.quantity,  // Cálculo del total con fallback
+        id: item.product._id
+      };
+    }).filter(product => product !== null);  // Filtrar productos que son null
+
+    const totalPrice = products.reduce((acc, curr) => acc + curr.total, 0);  // Cálculo del total del carrito
+
+    res.render('cart-details', {
+      cartId: cart._id,
+      products: products,
+      title: "Detalles del Carrito",
+      totalPrice: totalPrice
+    });
   } catch (error) {
-      console.error('Error al obtener el carrito:', error);
-      res.status(500).send('Error al obtener los detalles del carrito');
+    console.error('Error al obtener el carrito:', error);
+    res.status(500).send('Error al obtener los detalles del carrito');
   }
 });
 
