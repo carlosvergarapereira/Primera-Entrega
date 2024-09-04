@@ -5,18 +5,16 @@ const router = express.Router();
 
 // Ruta GET /api/products con búsqueda, filtrado, ordenamiento y paginación
 router.get('/', async (req, res) => {
-  const { query, category, availability, sort, page = 1, limit = 10 } = req.query;
+  const { query, category, availability, sort = 'asc', page = 1, limit = 10 } = req.query;
 
   const filter = {};
 
-  // Búsqueda por nombre
+  // Búsqueda por nombre o categoría
   if (query) {
-    filter.nombre = { $regex: query, $options: 'i' }; // Búsqueda insensible a mayúsculas y minúsculas
-  }
-
-  // Filtrado por categoría
-  if (category) {
-    filter.categoria = category;
+    filter.$or = [
+      { nombre: { $regex: query, $options: 'i' } },
+      { categoria: { $regex: query, $options: 'i' } }
+    ];
   }
 
   // Filtrado por disponibilidad
@@ -29,7 +27,7 @@ router.get('/', async (req, res) => {
     const totalPages = Math.ceil(totalProducts / limit);
 
     const options = {
-      sort: sort ? { precio: sort === 'asc' ? 1 : -1 } : {}, // Ordenamiento por precio ascendente o descendente
+      sort: { precio: sort === 'asc' ? 1 : -1 },
       skip: (page - 1) * limit,
       limit: parseInt(limit),
     };
@@ -45,14 +43,14 @@ router.get('/', async (req, res) => {
       page: parseInt(page),
       hasPrevPage: page > 1,
       hasNextPage: page < totalPages,
-      prevLink: page > 1 ? `/api/products?query=${query}&category=${category}&availability=${availability}&sort=${sort}&page=${page - 1}&limit=${limit}` : null,
-      nextLink: page < totalPages ? `/api/products?query=${query}&category=${category}&availability=${availability}&sort=${sort}&page=${page + 1}&limit=${limit}` : null
+      prevLink: page > 1 ? `/api/products?page=${page - 1}&limit=${limit}` : null,
+      nextLink: page < totalPages ? `/api/products?page=${page + 1}&limit=${limit}` : null
     };
 
     res.json(response);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error al obtener los productos' });
+    res.status(500).json({ status: 'error', message: 'Error al obtener los productos' });
   }
 });
 
