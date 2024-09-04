@@ -90,7 +90,7 @@
         // Función para actualizar la cantidad de un producto en el carrito
         async function updateQuantity(cartId, productId, quantity) {
             try {
-                const response = await fetch(`/api/carts/${cartId}/products/${productId}`, {
+                const response = await fetch(`/api/carts/api/carts/${cartId}/products/${productId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'

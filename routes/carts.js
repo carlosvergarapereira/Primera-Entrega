@@ -41,7 +41,32 @@ router.get('/cart-details', async (req, res) => {
     res.status(500).send('Error al obtener los detalles del carrito');
   }
 });
+// PUT /api/carts/:cid/products/:pid para actualizar la cantidad de un producto en el carrito
+router.put('/api/carts/:cid/products/:pid', async (req, res) => {
+  const { cid, pid } = req.params;
+  const { quantity } = req.body;
 
+  try {
+    const cart = await Cart.findById(cid);
+    if (!cart) {
+      return res.status(404).json({ message: 'Carrito no encontrado' });
+    }
+
+    const productIndex = cart.products.findIndex(item => item.product.toString() === pid);
+    if (productIndex === -1) {
+      return res.status(404).json({ message: 'Producto no encontrado en el carrito' });
+    }
+
+    // Actualiza la cantidad del producto
+    cart.products[productIndex].quantity = quantity;
+    await cart.save();
+
+    res.json(cart);
+  } catch (error) {
+    console.error('Error al actualizar la cantidad del producto:', error);
+    res.status(500).json({ message: 'Error al actualizar la cantidad del producto', error: error.message });
+  }
+});
 // POST /api/carts/add-product/:pid para agregar un producto al carrito
 router.post('/add-product/:pid', async (req, res) => {
   const { pid } = req.params;
