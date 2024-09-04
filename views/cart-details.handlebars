@@ -27,9 +27,12 @@
                     <p>Total: ${{total}}</p>
                 </div>
                 <div class="action-buttons" id="eliminar">
-                    <!-- Llama a removeProduct con el ID del carrito y el ID del producto -->
-                    <button onclick="removeProduct('{{cartId}}', '{{id}}')">Eliminar</button>
-
+                    <li>
+                        
+                        <button class="delete-btn" data-cart-id="{{../cartId}}" data-product-id="{{id}}">
+                        Eliminar Producto
+                        </button>
+                    </li>
                 </div>
             </div>
             {{/each}}
@@ -62,6 +65,27 @@
                 alert('Hubo un problema al intentar reducir la cantidad del producto.');
             }
         }
+
+         // Capturar el evento de click en el botón de eliminar
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', async function() {
+                const cartId = this.getAttribute('data-cart-id');
+                const productId = this.getAttribute('data-product-id');
+
+                // Realizar la solicitud DELETE
+                const response = await fetch(`/api/carts/api/carts/${cartId}/products/${productId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    alert('Producto eliminado');
+                    // Recargar la página o actualizar la vista si es necesario
+                    window.location.reload();
+                } else {
+                    alert('Error al eliminar el producto');
+                }
+                });
+            });
 
         // Función para actualizar la cantidad de un producto en el carrito
         async function updateQuantity(cartId, productId, quantity) {

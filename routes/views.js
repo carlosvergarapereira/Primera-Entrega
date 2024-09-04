@@ -97,7 +97,7 @@ router.get('/cart-details', async (req, res) => {
           id: item.product._id
       }));
 
-      res.render('cart-details', { products: products, title: "Detalles del Carrito" }); // Envía los datos a la vista
+      res.render('cart-details', { cartId: cart._id,products: products, title: "Detalles del Carrito",precio: products.precio}); // Envía los datos a la vista
   } catch (error) {
       console.error('Error al obtener el carrito:', error);
       res.status(500).send('Error al obtener los detalles del carrito');
