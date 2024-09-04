@@ -1,12 +1,18 @@
 import mongoose from 'mongoose';
 
 const productoSchema = new mongoose.Schema({
-    nombre: String,
-    precio: Number,
+    nombre: {
+        type: String,
+        required: true,
+    },
+    precio: {
+        type: Number,
+        required: true,
+    },
     descripcion: String,
     categoria: {
         type: String,
-        enum: ['electronica', 'ropa', 'hogar', 'otros'] //  agregar más categorías.
+        enum: ['electronica', 'ropa', 'hogar', 'otros'] //  agregar categorías.
     },
     fechaCreacion: {
         type: Date,

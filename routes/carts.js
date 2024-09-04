@@ -1,30 +1,39 @@
 import express from 'express';
 import Cart from '../models/carts.js';
-import Product from '../models/products.js';
+import Productos from '../models/products.js';  // Modelo de Productos
 
 const router = express.Router();
 
-// GET /cart-details para mostrar los detalles del carrito
 router.get('/cart-details', async (req, res) => {
   try {
     const cart = await Cart.findOne().populate('products.product');
+    
     if (!cart || cart.products.length === 0) {
-      return res.render('cart-details', { products: [], title: "Detalles del Carrito", message: "Tu carrito está vacío." });
+      return res.status(200).json({
+        message: "Tu carrito está vacío.",
+        cartId: null
+      });
     }
-    
-    const products = cart.products.map(item => ({
-      nombre: item.product.nombre,
-      precio: item.product.precio,
-      cantidad: item.quantity,
-      total: item.product.precio * item.quantity,
-      id: item.product._id
-    }));
-    
+
+    const products = cart.products.map(item => {
+      if (!item.product) {
+        // Si el producto no está poblado correctamente, devuélvelo como nulo
+        return null;
+      }
+      return {
+        nombre: item.product.nombre,
+        precio: item.product.precio,
+        cantidad: item.quantity,
+        total: item.product.precio * item.quantity,
+        id: item.product._id
+      };
+    }).filter(product => product !== null);  // Filtra productos nulos
+
     const totalPrice = products.reduce((acc, curr) => acc + curr.total, 0);
-    
-    res.render('cart-details', {
+
+    res.status(200).json({
+      cartId: cart._id,
       products: products,
-      title: "Detalles del Carrito",
       totalPrice: totalPrice
     });
   } catch (error) {

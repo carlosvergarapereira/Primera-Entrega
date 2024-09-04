@@ -28,7 +28,8 @@
                 </div>
                 <div class="action-buttons" id="eliminar">
                     <!-- Llama a removeProduct con el ID del carrito y el ID del producto -->
-                    <button onclick="removeProduct('{{../cartId}}', '{{id}}')">Eliminar</button>
+                    <button onclick="removeProduct('{{cartId}}', '{{id}}')">Eliminar</button>
+
                 </div>
             </div>
             {{/each}}
@@ -42,8 +43,10 @@
     <script>
         // Función para reducir la cantidad de un producto en el carrito
         async function removeProduct(cartId, productId) {
+            console.log('Cart ID:', cartId);  // Verifica que el cartId se está pasando correctamente
+            console.log('Product ID:', productId); 
             try {
-                const response = await fetch(`/api/carts/${cartId}/products/${productId}`, {
+                const response = await fetch(`/api/carts/api/carts/${cartId}/products/${productId}`, {
                     method: 'DELETE'
                 });
 

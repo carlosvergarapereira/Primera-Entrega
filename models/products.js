@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
-import productoSchema from '../schemas/products.js'; // Importando el esquema
+import productoSchema from '../schemas/products.js'; // Importa el esquema del producto
 
-const Productos = mongoose.model('products', productoSchema);
+const Productos = mongoose.model('products', productoSchema);  // El nombre debe coincidir con el de la referencia
 
-export default Productos; // Exportar el modelo como default
+export default Productos;
