@@ -8,45 +8,45 @@ router.get('/create', (req, res) => {
   res.render('createProduct', { title: 'Crear Nuevo Producto' });
 });
 
-// Ruta para mostrar la lista de productos con paginación
+// Ruta para mostrar la lista de productos con paginación y filtrado por categoría
 router.get('/products', async (req, res) => {
-  const { query, sort = 'asc', page = 1, limit = 10 } = req.query;
-  let filter = {};
+  const { category, sort = 'asc', page = 1, limit = 10 } = req.query;
+  let filter = { estado: true }; // Filtrar siempre por productos activos
 
-  // Si se proporciona un query parameter
-  if (query) {
-    filter = {
-      $or: [
-        { nombre: { $regex: query, $options: 'i' } }, // Filtra por nombre
-        { descripcion: { $regex: query, $options: 'i' } }, // Filtra por descripción
-      ],
-    };
+  // Filtrar por categoría si se proporciona
+  if (category && category !== '') {
+    filter.categoria = category;
   }
-    
 
-  // Lógica para filtrar, ordenar y paginar los productos
-  const products = await Productos.find(filter)
-    .skip((page - 1) * limit)
-    .limit(limit)
-    .sort({ precio: sort === 'asc' ? 1 : -1 });
+  try {
+    // Lógica para filtrar, ordenar y paginar los productos
+    const products = await Productos.find(filter)
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .sort({ precio: sort === 'asc' ? 1 : -1 });
 
-  const totalProducts = await Productos.countDocuments(filter);
-  const totalPages = Math.ceil(totalProducts / limit);
-  const hasPrevPage = page > 1;
-  const hasNextPage = page < totalPages;
-  const prevLink = hasPrevPage ? `/products?page=${page - 1}&limit=${limit}` : null;
-  const nextLink = hasNextPage ? `/products?page=${page + 1}&limit=${limit}` : null;
+    const totalProducts = await Productos.countDocuments(filter);
+    const totalPages = Math.ceil(totalProducts / limit);
+    const hasPrevPage = page > 1;
+    const hasNextPage = page < totalPages;
+    const prevLink = hasPrevPage ? `/products?category=${category}&page=${page - 1}&limit=${limit}` : null;
+    const nextLink = hasNextPage ? `/products?category=${category}&page=${page + 1}&limit=${limit}` : null;
 
-  res.render('index', {
-    payload: products,
-    totalPages,
-    page,
-    hasPrevPage,
-    hasNextPage,
-    prevLink,
-    nextLink,
-  });
+    res.render('index', {
+      payload: products,
+      totalPages,
+      page,
+      hasPrevPage,
+      hasNextPage,
+      prevLink,
+      nextLink,
+    });
+  } catch (error) {
+    console.error('Error al obtener los productos:', error);
+    res.status(500).send('Error al obtener los productos');
+  }
 });
+
 
 
 

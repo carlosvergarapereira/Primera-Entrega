@@ -33,7 +33,7 @@
         }
         .product-item a {
             display: block;
-            background-color: #f1c40f; /* Color amarillo */
+            background-color: #f1c40f;
             color: #fff;
             text-decoration: none;
             padding: 10px;
@@ -43,10 +43,10 @@
             transition: background-color 0.3s ease;
         }
         .product-item a:hover {
-            background-color: #f39c12; /* Color amarillo más oscuro al pasar el ratón */
+            background-color: #f39c12;
         }
         .product-item button {
-            background-color: #2ecc71; /* Color verde */
+            background-color: #2ecc71;
             color: #fff;
             border: none;
             padding: 10px;
@@ -54,11 +54,11 @@
             border-radius: 5px;
             font-size: 14px;
             transition: background-color 0.3s ease;
-            width: 100%; /* Ocupa todo el ancho del contenedor */
-            box-sizing: border-box; /* Incluye padding en el ancho total */
+            width: 100%;
+            box-sizing: border-box;
         }
         .product-item button:hover {
-            background-color: #27ae60; /* Color verde más oscuro al pasar el mouse */
+            background-color: #27ae60;
         }
         .pagination {
             text-align: center;
@@ -86,6 +86,25 @@
             color: #e74c3c;
             margin-bottom: 20px;
         }
+        /* Filtro de categoría */
+        .category-filter {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .category-filter select {
+            padding: 10px;
+            font-size: 16px;
+        }
+        .category-filter button {
+            padding: 10px;
+            font-size: 16px;
+            margin-left: 10px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
@@ -93,6 +112,21 @@
     <main>
         <!-- Título "Productos Activos" -->
         <h1 class="title">Productos Activos</h1>
+
+        <!-- Filtro por categoría -->
+        <div class="category-filter">
+            <form id="categoryForm" action="/products" method="GET">
+                <label for="category">Filtrar por Categoría:</label>
+                <select name="category" id="category">
+                    <option value="">Todas</option>
+                    <option value="electronica">Electrónica</option>
+                    <option value="ropa">Ropa</option>
+                    <option value="hogar">Hogar</option>
+                    <option value="otros">Otros</option>
+                </select>
+                <button type="submit">Filtrar</button>
+            </form>
+        </div>
 
         <div id="message"></div>
         <div class="product-list">
@@ -137,7 +171,7 @@
                     fetch(actionURL, {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json' // Asegúrate de que esto está configurado si es necesario
+                            'Content-Type': 'application/json'
                         }
                     })
                     .then(response => {
@@ -161,7 +195,6 @@
                         messageElement.textContent = 'Error al procesar la solicitud: ' + error.message;
                         messageElement.style.color = 'red';
                     });
-
                 });
             });
         });
