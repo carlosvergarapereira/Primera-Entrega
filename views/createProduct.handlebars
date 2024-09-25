@@ -5,11 +5,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crear Producto</title>
     <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        /* Estilo del título "Crear Producto" */
+        .title {
+            text-align: center;
+            font-size: 24px;
+            color: #e74c3c;
+            margin-bottom: 20px;
+        }
+
+        /* Estilo para centrar el formulario */
+        .form-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 30vh;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 400px;
+            margin: auto;
+        }
+
+        td {
+            padding: 5px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #e74c3c;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #c0392b;
+        }
+    </style>
 </head>
 <body>
 
+    <!-- Título "Crear Producto" -->
+    <h1 class="title">Formulario de nuevo Producto</h1>
 
-    <main>
+    <div class="form-container">
         <form id="createProductForm" action="/api/products" method="POST">
             <table>
                 <tr>
@@ -52,8 +100,9 @@
                 </tr>
             </table>
         </form>
-        <div id="message" style="margin-top: 20px;"></div>
-    </main>
+    </div>
+
+    <div id="message" style="margin-top: 20px;"></div>
 
     <script>
         document.getElementById('createProductForm').addEventListener('submit', async function(e) {

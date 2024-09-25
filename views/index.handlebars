@@ -79,12 +79,21 @@
             text-align: center;
             margin-top: 10px;
         }
+        /* Agregamos estilo para el título */
+        .title {
+            text-align: center;
+            font-size: 24px;
+            color: #e74c3c;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
 
-
     <main>
+        <!-- Título "Productos Activos" -->
+        <h1 class="title">Productos Activos</h1>
+
         <div id="message"></div>
         <div class="product-list">
             {{#each payload}}
@@ -92,7 +101,6 @@
                     <h2>{{nombre}}</h2>
                     <p>Precio: ${{precio}}</p>
                     <p>Categoría: {{categoria}}</p>
-                    <p>{{descripcion}}</p>
                     
                     <!-- Botón para ver detalles del producto -->
                     <a href="/product-details/{{_id}}">Ver detalles</a>

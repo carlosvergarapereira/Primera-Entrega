@@ -10,10 +10,21 @@
         img { max-width: 100px; height: auto; }
         button { background-color: red; color: white; border: none; padding: 5px 10px; cursor: pointer; }
         .edit-button { background-color: green; margin-right: 5px; }
+
+        /* Estilo del título "Productos Activos" */
+        .title {
+            text-align: center;
+            font-size: 24px;
+            color: #e74c3c;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
-    <h1>Productos en Tiempo Real</h1>
+
+    <!-- Título "Productos Activos" -->
+    <h1 class="title">Mantenedor de Productos</h1>
+
     <table>
         <thead>
             <tr>
@@ -92,12 +103,11 @@
                     button.addEventListener('click', (e) => {
                         const product = button.getAttribute('data-product');
                         fetch(`/api/products/${product}`, { method: 'DELETE' })
-                .then(response => response.json())
-                .then(data => {
-                    location.reload();  // Recarga la página para reflejar los cambios
-                })
-                .catch(error => console.error('Error al eliminar producto:', error));
-
+                            .then(response => response.json())
+                            .then(data => {
+                                location.reload();  // Recarga la página para reflejar los cambios
+                            })
+                            .catch(error => console.error('Error al eliminar producto:', error));
                     });
                 });
             }

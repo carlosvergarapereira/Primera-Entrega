@@ -3,9 +3,9 @@ import Productos from '../models/products.js'; // Importa el modelo de Productos
 
 const router = express.Router();
 
-
+// Ruta para obtener productos con filtros (nombre, categoría, disponibilidad, etc.)
 router.get('/', async (req, res) => {
-  const { query, category, availability, sort = 'asc', page = 1, limit = 10 } = req.query;
+  const { query, category, availability = 'true', sort = 'asc', page = 1, limit = 10 } = req.query;
 
   const filter = {};
 
@@ -18,9 +18,7 @@ router.get('/', async (req, res) => {
   }
 
   // Filtrado por disponibilidad
-  if (availability) {
-    filter.estado = availability === 'true';
-  }
+  filter.estado = availability === 'true'; // Muestra solo productos con estado `true` si `availability` es true
 
   try {
     const totalProducts = await Productos.countDocuments(filter);
@@ -54,7 +52,18 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Ruta para mostrar productos en la vista (filtrados por disponibilidad)
+router.get('/view', async (req, res) => {
+  try {
+    const productos = await Productos.find({ estado: true }); // Muestra solo productos activos (estado: true)
+    res.render('index', { payload: productos });
+  } catch (error) {
+    console.error('Error al obtener los productos:', error);
+    res.status(500).send('Error en el servidor');
+  }
+});
 
+// Ruta para crear un nuevo producto
 router.post('/', async (req, res) => {
   try {
     const newProduct = new Productos(req.body);
@@ -66,18 +75,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-
-router.get('/', async (req, res) => {
-  try {
-    const productos = await Productos.find(); // Obtiene todos los productos sin filtros
-    res.render('index', { payload: productos }); 
-  } catch (error) {
-    console.error('Error al obtener los productos:', error);
-    res.status(500).send('Error en el servidor');
-  }
-});
-
-
+// Ruta para obtener un producto por ID
 router.get('/:id', async (req, res) => {
   try {
     const product = await Productos.findById(req.params.id);
@@ -91,9 +89,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-
-
-
+// Ruta para actualizar un producto por ID
 router.put('/:id', async (req, res) => {
   try {
     const updatedProduct = await Productos.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -107,29 +103,17 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-
+// Ruta para eliminar un producto por ID
 router.delete('/:id', async (req, res) => {
-  const { id } = req.params;
   try {
-      const product = await Productos.findByIdAndDelete(id);
-      if (!product) {
-          return res.status(404).json({ message: 'Producto no encontrado' });
-      }
-      res.json({ message: 'Producto eliminado con éxito' });
+    const product = await Productos.findByIdAndDelete(req.params.id);
+    if (!product) {
+      return res.status(404).json({ message: 'Producto no encontrado' });
+    }
+    res.json({ message: 'Producto eliminado con éxito' });
   } catch (error) {
-      console.error('Error al eliminar producto:', error);
-      res.status(500).json({ message: 'Error al eliminar producto', error: error.message });
-  }
-});
-
-
-router.get('/view', async (req, res) => {
-  try {
-      const productos = await Productos.find(); // Obtiene todos los productos sin filtros
-      res.render('index', { payload: productos }); 
-  } catch (error) {
-      console.error('Error al obtener los productos:', error);
-      res.status(500).send('Error en el servidor');
+    console.error('Error al eliminar producto:', error);
+    res.status(500).json({ message: 'Error al eliminar producto', error: error.message });
   }
 });
 

@@ -36,10 +36,10 @@ app.set('views', './views');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
-
 app.use('/', viewRouter);
+// Redirige la raíz del proyecto a /api/products/view
 app.get('/', (req, res) => {
-  res.redirect('/products');
+  res.redirect('/api/products/view');
 });
 
 app.use('/api/products', productsRouter);
