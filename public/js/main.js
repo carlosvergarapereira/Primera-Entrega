@@ -7,8 +7,8 @@ socket.on('updateProducts', (products) => {
 
 // Función para actualizar la lista de productos en la vista
 function updateProductList(products) {
-    const productList = document.getElementById('product-list'); // Suponiendo que tienes un contenedor con id 'product-list'
-    productList.innerHTML = ''; // Limpia el contenedor
+    const productList = document.getElementById('product-list'); 
+    productList.innerHTML = ''; 
 
     products.forEach(product => {
         const productElement = document.createElement('div');

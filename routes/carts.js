@@ -1,6 +1,6 @@
 import express from 'express';
 import Cart from '../models/carts.js';
-import Productos from '../models/products.js';  // Modelo de Productos
+
 
 const router = express.Router();
 
@@ -27,7 +27,7 @@ router.get('/cart-details', async (req, res) => {
         total: item.product.precio * item.quantity,
         id: item.product._id
       };
-    }).filter(product => product !== null);  // Filtra productos nulos
+    }).filter(product => product !== null);  
 
     const totalPrice = products.reduce((acc, curr) => acc + curr.total, 0);
 
@@ -41,7 +41,7 @@ router.get('/cart-details', async (req, res) => {
     res.status(500).send('Error al obtener los detalles del carrito');
   }
 });
-// PUT /api/carts/:cid/products/:pid para actualizar la cantidad de un producto en el carrito
+
 router.put('/api/carts/:cid/products/:pid', async (req, res) => {
   const { cid, pid } = req.params;
   const { quantity } = req.body;
@@ -67,7 +67,8 @@ router.put('/api/carts/:cid/products/:pid', async (req, res) => {
     res.status(500).json({ message: 'Error al actualizar la cantidad del producto', error: error.message });
   }
 });
-// POST /api/carts/add-product/:pid para agregar un producto al carrito
+
+
 router.post('/add-product/:pid', async (req, res) => {
   const { pid } = req.params;
 
@@ -95,7 +96,7 @@ router.post('/add-product/:pid', async (req, res) => {
   }
 });
 
-// DELETE /api/carts/api/carts/:cid/products/:pid para reducir la cantidad de un producto o eliminarlo del carrito
+
 router.delete('/api/carts/:cid/products/:pid', async (req, res) => {
   const { cid, pid } = req.params;
 
@@ -127,7 +128,7 @@ router.delete('/api/carts/:cid/products/:pid', async (req, res) => {
   }
 });
 
-// PUT /api/carts/:cid/products/:pid para actualizar la cantidad de un producto en el carrito
+
 router.put('/api/carts/:cid/products/:pid', async (req, res) => {
   const { cid, pid } = req.params;
   const { quantity } = req.body;
@@ -153,7 +154,7 @@ router.put('/api/carts/:cid/products/:pid', async (req, res) => {
   }
 });
 
-// DELETE /api/carts/:cid para vaciar el carrito
+
 router.delete('/api/carts/:cid', async (req, res) => {
   const { cid } = req.params;
 

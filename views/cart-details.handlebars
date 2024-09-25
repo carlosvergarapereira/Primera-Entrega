@@ -43,9 +43,7 @@
 
     <script>
         // Función para reducir la cantidad de un producto en el carrito
-        async function removeProduct(cartId, productId) {
-            console.log('Cart ID:', cartId);  // Verifica que el cartId se está pasando correctamente
-            console.log('Product ID:', productId); 
+        async function removeProduct(cartId, productId) { 
             try {
                 const response = await fetch(`/api/carts/api/carts/${cartId}/products/${productId}`, {
                     method: 'DELETE'

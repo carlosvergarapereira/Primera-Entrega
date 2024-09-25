@@ -49,7 +49,7 @@ router.get('/products', async (req, res) => {
 });
 
 
-// GET /product-details/:pid
+
 router.get('/product-details/:pid', async (req, res) => {
   const { pid } = req.params;
 
@@ -67,7 +67,7 @@ router.get('/product-details/:pid', async (req, res) => {
 });
 
 
-// Ruta para servir la página de productos en tiempo real, cargando todos los productos disponibles
+// Ruta para servir la página de productos en tiempo real, mostrando los productos disponibles
 router.get('/realtimeproducts', async (req, res) => {
   try {
       const products = await Productos.find({});
@@ -83,27 +83,26 @@ router.get('/realtimeproducts', async (req, res) => {
 // Ruta para mostrar la página de detalles del carrito
 router.get('/cart-details', async (req, res) => {
   try {
-    const cart = await Cart.findOne().populate('products.product'); // Asegúrate de que estás haciendo el populate correctamente
-
+    const cart = await Cart.findOne().populate('products.product'); 
     if (!cart || cart.products.length === 0) {
       return res.render('cart-details', { products: [], title: "Detalles del Carrito" });
     }
 
-    // Mapeo de productos, validando que el precio y el producto existan
+   
     const products = cart.products.map(item => {
       if (!item.product) {
-        return null;  // Maneja el caso cuando el producto no existe
+        return null;  
       }
       return {
-        nombre: item.product.nombre || 'Producto sin nombre',  // Fallback si falta el nombre
-        precio: item.product.precio || 0,  // Fallback si el precio es nulo
+        nombre: item.product.nombre || 'Producto sin nombre',  
+        precio: item.product.precio || 0,  
         cantidad: item.quantity,
-        total: (item.product.precio || 0) * item.quantity,  // Cálculo del total con fallback
+        total: (item.product.precio || 0) * item.quantity,  
         id: item.product._id
       };
-    }).filter(product => product !== null);  // Filtrar productos que son null
+    }).filter(product => product !== null);  
 
-    const totalPrice = products.reduce((acc, curr) => acc + curr.total, 0);  // Cálculo del total del carrito
+    const totalPrice = products.reduce((acc, curr) => acc + curr.total, 0); 
 
     res.render('cart-details', {
       cartId: cart._id,

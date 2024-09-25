@@ -7,8 +7,6 @@ import cartsRouter from './routes/carts.js';
 import viewRouter from './routes/views.js';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import Handlebars from 'handlebars';
 import { allowInsecurePrototypeAccess } from '@handlebars/allow-prototype-access';
 
@@ -20,7 +18,7 @@ const mongooseUri = process.env.MONGODB_URI;
 
 app.set('io', io);
 
-// Configuración de Handlebars con acceso inseguro a prototipos
+// Configuración de Handlebars 
 const hbs = create({
   handlebars: allowInsecurePrototypeAccess(Handlebars),
   extname: '.handlebars',
@@ -46,7 +44,6 @@ app.get('/', (req, res) => {
 
 app.use('/api/products', productsRouter);
 app.use('/api/carts', cartsRouter);
-//app.use('/cart-details', cartsRouter);
 
 server.listen(8080, () => {
   console.log('Listening on port 8080');

@@ -3,7 +3,7 @@ import Productos from '../models/products.js'; // Importa el modelo de Productos
 
 const router = express.Router();
 
-// Ruta GET /api/products con búsqueda, filtrado, ordenamiento y paginación
+
 router.get('/', async (req, res) => {
   const { query, category, availability, sort = 'asc', page = 1, limit = 10 } = req.query;
 
@@ -54,7 +54,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Ruta POST /api/products para crear un nuevo producto
+
 router.post('/', async (req, res) => {
   try {
     const newProduct = new Productos(req.body);
@@ -66,18 +66,18 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Ruta GET /products para mostrar la vista de productos
+
 router.get('/', async (req, res) => {
   try {
     const productos = await Productos.find(); // Obtiene todos los productos sin filtros
-    res.render('index', { payload: productos }); // Renderiza la vista 'index.handlebars' pasando los productos
+    res.render('index', { payload: productos }); 
   } catch (error) {
     console.error('Error al obtener los productos:', error);
     res.status(500).send('Error en el servidor');
   }
 });
 
-// Ruta GET /api/products/:id para obtener un producto por ID
+
 router.get('/:id', async (req, res) => {
   try {
     const product = await Productos.findById(req.params.id);
@@ -93,7 +93,7 @@ router.get('/:id', async (req, res) => {
 
 
 
-// Ruta PUT /api/products/:id para actualizar un producto por ID
+
 router.put('/:id', async (req, res) => {
   try {
     const updatedProduct = await Productos.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -107,7 +107,7 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// Ruta DELETE /api/products/:id para eliminar un producto por ID
+
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   try {
@@ -122,11 +122,11 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-// Ruta para mostrar la página de productos usando Handlebars
+
 router.get('/view', async (req, res) => {
   try {
       const productos = await Productos.find(); // Obtiene todos los productos sin filtros
-      res.render('index', { payload: productos }); // Renderiza la vista 'index.handlebars' pasando los productos
+      res.render('index', { payload: productos }); 
   } catch (error) {
       console.error('Error al obtener los productos:', error);
       res.status(500).send('Error en el servidor');
