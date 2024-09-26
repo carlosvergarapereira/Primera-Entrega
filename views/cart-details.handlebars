@@ -49,13 +49,13 @@
                     <h2>{{nombre}}</h2>
                     <p>Precio: ${{precio}}</p>
                     <p>Cantidad:
-                        <input type="number" value="{{cantidad}}" min="1" onchange="updateQuantity('{{../cartId}}', '{{id}}', this.value, {{cantidad}}, {{stock}})">
+                        <input type="number" value="{{cantidad}}" min="1" onchange="updateQuantity('{{../cartId}}', '{{id}}', this.value)">
                     </p>
                     <p>Total: ${{total}}</p>
                 </div>
                 <div class="action-buttons" id="eliminar">
                     <li>
-                        <button class="delete-btn" data-cart-id="{{../cartId}}" data-product-id="{{id}}" data-cantidad="{{cantidad}}">
+                        <button class="delete-btn" data-cart-id="{{../cartId}}" data-product-id="{{id}}">
                         Eliminar Producto
                         </button>
                     </li>
@@ -70,18 +70,18 @@
     </main>
 
     <script>
-        // Función para eliminar un producto del carrito y actualizar el stock
-        async function removeProduct(cartId, productId, quantity) {
+        // Función para eliminar un producto del carrito
+        async function removeProduct(cartId, productId) {
             try {
                 const response = await fetch(`/api/carts/${cartId}/products/${productId}`, {
                     method: 'DELETE'
                 });
 
                 if (response.ok) {
-                    await updateStock(productId, quantity, 'add'); // Sumar el stock al eliminar
                     location.reload();
                 } else {
-                    alert('Error al eliminar el producto');
+                    const errorData = await response.json();
+                    alert('Error al eliminar el producto: ' + errorData.message);
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -94,16 +94,18 @@
             button.addEventListener('click', async function() {
                 const cartId = this.getAttribute('data-cart-id');
                 const productId = this.getAttribute('data-product-id');
-                const cantidad = this.getAttribute('data-cantidad');
 
-                // Eliminar el producto y sumar la cantidad eliminada al stock
-                await removeProduct(cartId, productId, cantidad);
+                // Eliminar el producto
+                await removeProduct(cartId, productId);
             });
         });
 
-        // Función para actualizar la cantidad de un producto en el carrito y modificar el stock
-        async function updateQuantity(cartId, productId, newQuantity, currentQuantity, stock) {
-            const difference = newQuantity - currentQuantity;
+        // Función para actualizar la cantidad de un producto en el carrito
+        async function updateQuantity(cartId, productId, newQuantity) {
+            if (newQuantity <= 0) {
+                alert('La cantidad debe ser mayor que 0');
+                return;
+            }
 
             try {
                 const response = await fetch(`/api/carts/${cartId}/products/${productId}`, {
@@ -115,41 +117,14 @@
                 });
 
                 if (response.ok) {
-                    // Si la cantidad aumenta, resta la diferencia al stock
-                    if (difference > 0) {
-                        await updateStock(productId, difference, 'subtract');
-                    } 
-                    // Si la cantidad disminuye, suma la diferencia al stock
-                    else if (difference < 0) {
-                        await updateStock(productId, Math.abs(difference), 'add');
-                    }
-
                     location.reload(); // Recargar la página para mostrar los cambios
                 } else {
-                    alert('Error al actualizar la cantidad del producto');
+                    const errorData = await response.json();
+                    alert('Error al actualizar la cantidad del producto: ' + errorData.message);
                 }
             } catch (error) {
                 console.error('Error:', error);
                 alert('Hubo un problema al intentar actualizar la cantidad.');
-            }
-        }
-
-        // Función para actualizar el stock en la base de datos
-        async function updateStock(productId, amount, operation) {
-            try {
-                const response = await fetch(`/api/products/${productId}/stock`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ amount, operation }) // Enviar la cantidad a sumar/restar y la operación (add/subtract)
-                });
-
-                if (!response.ok) {
-                    throw new Error('Error al actualizar el stock');
-                }
-            } catch (error) {
-                console.error('Error al actualizar el stock:', error);
             }
         }
     </script>

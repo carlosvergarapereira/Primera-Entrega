@@ -1,6 +1,6 @@
 import express from 'express';
 import Cart from '../models/carts.js';
-import Product from '../models/products.js'; // Importa el modelo de productos
+import Product from '../models/products.js'; // Asegúrate de importar el modelo de productos
 
 const router = express.Router();
 
@@ -41,7 +41,7 @@ router.post('/add-product/:pid', async (req, res) => {
       // Descontar el stock del producto
       product.stock -= 1;
     } else {
-      // Verificar que haya stock antes de incrementar la cantidad
+      // Si ya existe el producto en el carrito, verificar que haya stock antes de incrementar la cantidad
       if (product.stock <= 0) {
         return res.status(400).json({ success: false, message: 'El producto no tiene stock disponible' });
       }
@@ -67,14 +67,18 @@ router.delete('/api/carts/:cid/products/:pid', async (req, res) => {
   const { cid, pid } = req.params;
 
   try {
+    console.log(`Buscando carrito con ID: ${cid} y producto con ID: ${pid}`);
+    
     // Buscar el carrito y poblar los productos
     const cart = await Cart.findById(cid).populate('products.product');
     if (!cart) {
+      console.log(`Carrito con ID: ${cid} no encontrado`);
       return res.status(404).json({ message: 'Carrito no encontrado' });
     }
 
-    const productIndex = cart.products.findIndex(item => item.product._id.toString() === pid);
+    const productIndex = cart.products.findIndex(item => item.product && item.product._id.toString() === pid);
     if (productIndex === -1) {
+      console.log(`Producto con ID: ${pid} no encontrado en el carrito`);
       return res.status(404).json({ message: 'Producto no encontrado en el carrito' });
     }
 
@@ -82,10 +86,11 @@ router.delete('/api/carts/:cid/products/:pid', async (req, res) => {
     const quantityToReturn = cart.products[productIndex].quantity;
 
     // Devolver el stock
-    product.stock += quantityToReturn;
-
-    // Guardar el producto con el stock actualizado
-    await product.save();
+    if (product) {
+      product.stock += quantityToReturn;
+      // Guardar el producto con el stock actualizado
+      await product.save();
+    }
 
     // Eliminar el producto del carrito
     cart.products.splice(productIndex, 1);
@@ -111,7 +116,7 @@ router.put('/api/carts/:cid/products/:pid', async (req, res) => {
       return res.status(404).json({ message: 'Carrito no encontrado' });
     }
 
-    const productIndex = cart.products.findIndex(item => item.product._id.toString() === pid);
+    const productIndex = cart.products.findIndex(item => item.product && item.product._id.toString() === pid);
     if (productIndex === -1) {
       return res.status(404).json({ message: 'Producto no encontrado en el carrito' });
     }
