@@ -1,8 +1,14 @@
 import express from 'express';
-import { body, validationResult } from 'express-validator'; // Importa express-validator para validaciones
-import Productos from '../models/products.js'; // Importa el modelo de Productos
+import { body, validationResult } from 'express-validator';
+import Productos from '../models/products.js';
 
 const router = express.Router();
+
+// Middleware para manejo de errores
+const errorHandler = (error, res) => {
+  console.error(error);
+  res.status(500).json({ status: 'error', message: 'Ha ocurrido un error inesperado. Por favor, inténtalo de nuevo.' });
+};
 
 // Ruta para obtener productos con filtros (nombre, categoría, disponibilidad, etc.)
 router.get('/', async (req, res) => {
@@ -19,7 +25,7 @@ router.get('/', async (req, res) => {
   }
 
   // Filtrado por disponibilidad
-  filter.estado = availability === 'true'; // Muestra solo productos con estado `true` si `availability` es true
+  filter.estado = availability === 'true';
 
   try {
     const totalProducts = await Productos.countDocuments(filter);
@@ -48,23 +54,21 @@ router.get('/', async (req, res) => {
 
     res.json(response);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ status: 'error', message: 'Error al obtener los productos' });
+    errorHandler(error, res);
   }
 });
 
 // Ruta para mostrar productos en la vista (filtrados por disponibilidad)
 router.get('/view', async (req, res) => {
   try {
-    const productos = await Productos.find({ estado: true }); // Muestra solo productos activos (estado: true)
+    const productos = await Productos.find({ estado: true });
     res.render('index', { payload: productos });
   } catch (error) {
-    console.error('Error al obtener los productos:', error);
-    res.status(500).send('Error en el servidor');
+    errorHandler(error, res);
   }
 });
 
-// Ruta para crear un nuevo producto con validaciones
+// Ruta para crear un nuevo producto con validaciones mejoradas
 router.post(
   '/',
   [
@@ -76,7 +80,7 @@ router.post(
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() }); // Devuelve los errores de validación
+      return res.status(400).json({ errors: errors.array() });
     }
 
     try {
@@ -84,8 +88,7 @@ router.post(
       await newProduct.save();
       res.status(201).json(newProduct);
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Error al crear el producto' });
+      errorHandler(error, res);
     }
   }
 );
@@ -99,12 +102,11 @@ router.get('/:id', async (req, res) => {
     }
     res.json(product);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error al obtener el producto' });
+    errorHandler(error, res);
   }
 });
 
-// Ruta para actualizar un producto por ID con validaciones
+// Ruta para actualizar un producto por ID con validaciones mejoradas
 router.put(
   '/:id',
   [
@@ -116,7 +118,7 @@ router.put(
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() }); // Devuelve los errores de validación
+      return res.status(400).json({ errors: errors.array() });
     }
 
     try {
@@ -126,8 +128,7 @@ router.put(
       }
       res.json(updatedProduct);
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Error al actualizar el producto' });
+      errorHandler(error, res);
     }
   }
 );
@@ -141,8 +142,7 @@ router.delete('/:id', async (req, res) => {
     }
     res.json({ message: 'Producto eliminado con éxito' });
   } catch (error) {
-    console.error('Error al eliminar producto:', error);
-    res.status(500).json({ message: 'Error al eliminar producto', error: error.message });
+    errorHandler(error, res);
   }
 });
 
