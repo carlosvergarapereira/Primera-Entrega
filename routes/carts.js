@@ -67,18 +67,16 @@ router.delete('/:cid/products/:pid', async (req, res) => {
   const { cid, pid } = req.params;
 
   try {
-    console.log(`Buscando carrito con ID: ${cid} y producto con ID: ${pid}`);
     
     // Buscar el carrito y poblar los productos
     const cart = await Cart.findById(cid).populate('products.product');
     if (!cart) {
-      console.log(`Carrito con ID: ${cid} no encontrado`);
+
       return res.status(404).json({ message: 'Carrito no encontrado' });
     }
 
     const productIndex = cart.products.findIndex(item => item.product && item.product._id.toString() === pid);
     if (productIndex === -1) {
-      console.log(`Producto con ID: ${pid} no encontrado en el carrito`);
       return res.status(404).json({ message: 'Producto no encontrado en el carrito' });
     }
 
