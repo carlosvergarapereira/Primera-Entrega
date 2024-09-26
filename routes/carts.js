@@ -63,7 +63,7 @@ router.post('/add-product/:pid', async (req, res) => {
 });
 
 // Ruta para eliminar un producto del carrito y devolver el stock
-router.delete('/api/carts/:cid/products/:pid', async (req, res) => {
+router.delete('/:cid/products/:pid', async (req, res) => {
   const { cid, pid } = req.params;
 
   try {
@@ -86,11 +86,10 @@ router.delete('/api/carts/:cid/products/:pid', async (req, res) => {
     const quantityToReturn = cart.products[productIndex].quantity;
 
     // Devolver el stock
-    if (product) {
-      product.stock += quantityToReturn;
-      // Guardar el producto con el stock actualizado
-      await product.save();
-    }
+    product.stock += quantityToReturn;
+
+    // Guardar el producto con el stock actualizado
+    await product.save();
 
     // Eliminar el producto del carrito
     cart.products.splice(productIndex, 1);
@@ -106,7 +105,7 @@ router.delete('/api/carts/:cid/products/:pid', async (req, res) => {
 });
 
 // Ruta para actualizar la cantidad de un producto en el carrito y ajustar el stock
-router.put('/api/carts/:cid/products/:pid', async (req, res) => {
+router.put('/:cid/products/:pid', async (req, res) => {
   const { cid, pid } = req.params;
   const { quantity } = req.body;
 
