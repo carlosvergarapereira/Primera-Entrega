@@ -79,7 +79,7 @@
             text-align: center;
             margin-top: 10px;
         }
-        /* Agregamos estilo para el título */
+        /* Estilo del título */
         .title {
             text-align: center;
             font-size: 24px;
@@ -104,6 +104,11 @@
             border: none;
             cursor: pointer;
             border-radius: 5px;
+        }
+        /* Estilo para el mensaje de "Sin stock disponible" */
+        .no-stock {
+            color: red;
+            font-size: 14px;
         }
     </style>
 </head>
@@ -131,18 +136,25 @@
         <div id="message"></div>
         <div class="product-list">
             {{#each payload}}
-                <div class="product-item">
+                <div class="product-item" data-product-id="{{_id}}">
                     <h2>{{nombre}}</h2>
                     <p>Precio: ${{precio}}</p>
                     <p>Categoría: {{categoria}}</p>
-                    
+                    <p class="stock">Stock disponible: {{stock}}</p> <!-- Mostramos el stock -->
+
                     <!-- Botón para ver detalles del producto -->
                     <a href="/product-details/{{_id}}">Ver detalles</a>
 
-                    <!-- Botón para agregar al carrito directamente -->
-                    <form class="add-to-cart-form" action="/api/carts/add-product/{{_id}}" method="POST">
-                        <button type="submit">Agregar al carrito</button>
-                    </form>
+                    <!-- Botón para agregar al carrito o mostrar el mensaje "Sin stock disponible" -->
+                    <div class="add-to-cart">
+                        {{#if stock}} <!-- Si el stock es mayor que 0, mostramos el botón -->
+                            <form class="add-to-cart-form" action="/api/carts/add-product/{{_id}}" method="POST">
+                                <button type="submit">Agregar al carrito</button>
+                            </form>
+                        {{else}} <!-- Si el stock es 0, mostramos un mensaje -->
+                            <p class="no-stock">Sin stock disponible</p>
+                        {{/if}}
+                    </div>
                 </div>
             {{/each}}
         </div>
@@ -165,8 +177,12 @@
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('.add-to-cart-form').forEach(form => {
                 form.addEventListener('submit', function(event) {
-                    event.preventDefault(); // Prevent form from submitting the traditional way
+                    event.preventDefault(); // Evitar el envío tradicional del formulario
                     let actionURL = this.action;
+                    let productElement = this.closest('.product-item'); // Seleccionar el contenedor del producto
+                    let stockElement = productElement.querySelector('.stock'); // Seleccionar el elemento del stock
+                    let stockText = stockElement.textContent.replace('Stock disponible: ', '');
+                    let stock = parseInt(stockText); // Obtener el stock actual
 
                     fetch(actionURL, {
                         method: 'POST',
@@ -185,6 +201,16 @@
                         if (data.success) {
                             messageElement.textContent = data.message;
                             messageElement.style.color = 'green';
+
+                            // Reducir el stock en la vista sin recargar
+                            stock -= 1;
+                            if (stock > 0) {
+                                stockElement.textContent = 'Stock disponible: ' + stock;
+                            } else {
+                                stockElement.textContent = 'Sin stock disponible';
+                                let addToCartDiv = productElement.querySelector('.add-to-cart');
+                                addToCartDiv.innerHTML = '<p class="no-stock">Sin stock disponible</p>'; // Reemplazar con el mensaje
+                            }
                         } else {
                             messageElement.textContent = data.message;
                             messageElement.style.color = 'red';

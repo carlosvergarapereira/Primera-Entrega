@@ -8,12 +8,18 @@ const productoSchema = new mongoose.Schema({
     precio: {
         type: Number,
         required: true,
+        min: 1
     },
     descripcion: String,
     categoria: {
         type: String,
         enum: ['electronica', 'ropa', 'hogar', 'otros'] // categorías.
     },
+    stock: {
+        type: Number,
+        required: true,
+        min: 0  
+      },
     fechaCreacion: {
         type: Date,
         default: Date.now

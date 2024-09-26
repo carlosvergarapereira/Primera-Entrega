@@ -1,4 +1,5 @@
 import express from 'express';
+import { body, validationResult } from 'express-validator'; // Importa express-validator para validaciones
 import Productos from '../models/products.js'; // Importa el modelo de Productos
 
 const router = express.Router();
@@ -63,17 +64,31 @@ router.get('/view', async (req, res) => {
   }
 });
 
-// Ruta para crear un nuevo producto
-router.post('/', async (req, res) => {
-  try {
-    const newProduct = new Productos(req.body);
-    await newProduct.save();
-    res.status(201).json(newProduct);
-  } catch (error) {
-    console.error(error);
-    res.status(400).json({ message: 'Error al crear el producto' });
+// Ruta para crear un nuevo producto con validaciones
+router.post(
+  '/',
+  [
+    body('nombre').notEmpty().withMessage('El nombre del producto es obligatorio'),
+    body('precio').isFloat({ gt: 0 }).withMessage('El precio debe ser mayor a 0'),
+    body('categoria').notEmpty().withMessage('La categoría es obligatoria'),
+    body('stock').isInt({ min: 0 }).withMessage('El stock debe ser un número entero positivo'),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() }); // Devuelve los errores de validación
+    }
+
+    try {
+      const newProduct = new Productos(req.body);
+      await newProduct.save();
+      res.status(201).json(newProduct);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Error al crear el producto' });
+    }
   }
-});
+);
 
 // Ruta para obtener un producto por ID
 router.get('/:id', async (req, res) => {
@@ -89,19 +104,33 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// Ruta para actualizar un producto por ID
-router.put('/:id', async (req, res) => {
-  try {
-    const updatedProduct = await Productos.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!updatedProduct) {
-      return res.status(404).json({ message: 'Producto no encontrado' });
+// Ruta para actualizar un producto por ID con validaciones
+router.put(
+  '/:id',
+  [
+    body('nombre').optional().notEmpty().withMessage('El nombre del producto es obligatorio'),
+    body('precio').optional().isFloat({ gt: 0 }).withMessage('El precio debe ser mayor a 0'),
+    body('categoria').optional().notEmpty().withMessage('La categoría es obligatoria'),
+    body('stock').optional().isInt({ min: 0 }).withMessage('El stock debe ser un número entero positivo'),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() }); // Devuelve los errores de validación
     }
-    res.json(updatedProduct);
-  } catch (error) {
-    console.error(error);
-    res.status(400).json({ message: 'Error al actualizar el producto' });
+
+    try {
+      const updatedProduct = await Productos.findByIdAndUpdate(req.params.id, req.body, { new: true });
+      if (!updatedProduct) {
+        return res.status(404).json({ message: 'Producto no encontrado' });
+      }
+      res.json(updatedProduct);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Error al actualizar el producto' });
+    }
   }
-});
+);
 
 // Ruta para eliminar un producto por ID
 router.delete('/:id', async (req, res) => {

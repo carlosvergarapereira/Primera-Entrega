@@ -77,8 +77,8 @@
                 <tr>
                     <td><label for="precio">Precio:</label></td>
                     <td>
-                        <input type="number" id="precio" name="precio" required min="0">
-                        <span id="precioError" style="color: red; display: none;">El precio es obligatorio y debe ser un valor positivo.</span>
+                        <input type="number" id="precio" name="precio" required min="0" step="0.01">
+                        <span id="precioError" style="color: red; display: none;">El precio es obligatorio y debe ser un valor positivo superior a 0.</span>
                     </td>
                 </tr>
                 <tr>
@@ -91,6 +91,14 @@
                             <option value="otros">Otros</option>
                         </select>
                         <span id="categoriaError" style="color: red; display: none;">La categoría es obligatoria.</span>
+                    </td>
+                </tr>
+                <!-- Agregar campo de Stock -->
+                <tr>
+                    <td><label for="stock">Stock:</label></td>
+                    <td>
+                        <input type="number" id="stock" name="stock" required min="1">
+                        <span id="stockError" style="color: red; display: none;">El stock debe ser un número entero positivo.</span>
                     </td>
                 </tr>
                 <tr>
@@ -113,6 +121,7 @@
                 descripcion: e.target.descripcion.value.trim(),
                 precio: parseFloat(e.target.precio.value),
                 categoria: e.target.categoria.value,
+                stock: parseInt(e.target.stock.value),  // Captura el valor del stock
                 estado: true // Establecido por defecto en el formulario
             };
 

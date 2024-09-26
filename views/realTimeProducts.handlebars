@@ -33,6 +33,7 @@
                 <th>Precio</th>
                 <th>Disponible</th>
                 <th>Categoría</th>
+                <th>Stock</th> <!-- Añadimos columna para el stock -->
                 <th>Imagen</th>
                 <th>Acción</th>
             </tr>
@@ -56,6 +57,7 @@
                 <option value="hogar">Hogar</option>
                 <option value="otros">Otros</option>
             </select></label>
+            <label>Stock: <input type="number" id="editStock" name="stock" required min="0"></label> <!-- Añadimos el campo de stock -->
             <label>Estado: <input type="checkbox" id="editEstado" name="estado"></label>
             <button type="submit">Guardar Cambios</button>
             <button type="button" id="closeEditModal">Cerrar</button>
@@ -78,10 +80,11 @@
                         <td>$${product.precio.toFixed(2)}</td>
                         <td>${product.estado ? 'Sí' : 'No'}</td>
                         <td>${product.categoria}</td>
+                        <td>${product.stock}</td> <!-- Mostramos el stock -->
                         <td><img src="${product.thumbnails && product.thumbnails.length > 0 ? product.thumbnails[0] : 'https://www.shutterstock.com/image-vector/default-ui-image-placeholder-wireframes-600nw-1037719192.jpg'}" alt="${product.nombre}"></td>
                         <td>
                             <button class="edit-button" data-product='${JSON.stringify(product)}'>Editar</button>
-                            <button  class="delete-button" data-product='${product._id}'">Eliminar</button>
+                            <button class="delete-button" data-product='${product._id}'">Eliminar</button>
                         </td>
                     </tr>
                 `).join('');
@@ -118,6 +121,7 @@
                 document.getElementById('editDescripcion').value = product.descripcion;
                 document.getElementById('editPrecio').value = product.precio;
                 document.getElementById('editCategoria').value = product.categoria;
+                document.getElementById('editStock').value = product.stock;  <!-- Mostramos el stock en el campo de edición -->
                 document.getElementById('editEstado').checked = product.estado;
                 editProductModal.style.display = 'block';
             }
@@ -135,6 +139,7 @@
                     descripcion: document.getElementById('editDescripcion').value,
                     precio: parseFloat(document.getElementById('editPrecio').value),
                     categoria: document.getElementById('editCategoria').value,
+                    stock: parseInt(document.getElementById('editStock').value),  <!-- Añadimos el stock al envío de datos -->
                     estado: document.getElementById('editEstado').checked
                 };
                 fetch(`/api/products/${document.getElementById('editId').value}`, {
