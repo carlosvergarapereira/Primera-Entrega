@@ -6,11 +6,40 @@
     <title>Detalles del Carrito</title>
     <link rel="stylesheet" href="/css/styles.css">
     <style>
-        /* Mantén el estilo existente */
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+        .item-details h2 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .item-details p {
+            margin: 5px 0;
+        }
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+        }
+        .delete-btn {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
-    
 
     <main class="main">
         {{#if products.length}}
@@ -20,14 +49,13 @@
                     <h2>{{nombre}}</h2>
                     <p>Precio: ${{precio}}</p>
                     <p>Cantidad:
-                        <input type="number" value="{{cantidad}}" min="1" onchange="updateQuantity('{{../cartId}}', '{{id}}', this.value)">
+                        <input type="number" value="{{cantidad}}" min="1" onchange="updateQuantity('{{../cartId}}', '{{id}}', this.value, {{cantidad}}, {{stock}})">
                     </p>
                     <p>Total: ${{total}}</p>
                 </div>
                 <div class="action-buttons" id="eliminar">
                     <li>
-                        
-                        <button class="delete-btn" data-cart-id="{{../cartId}}" data-product-id="{{id}}">
+                        <button class="delete-btn" data-cart-id="{{../cartId}}" data-product-id="{{id}}" data-cantidad="{{cantidad}}">
                         Eliminar Producto
                         </button>
                     </li>
@@ -42,68 +70,86 @@
     </main>
 
     <script>
-        // Función para reducir la cantidad de un producto en el carrito
-        async function removeProduct(cartId, productId) { 
+        // Función para eliminar un producto del carrito y actualizar el stock
+        async function removeProduct(cartId, productId, quantity) {
             try {
-                const response = await fetch(`/api/carts/api/carts/${cartId}/products/${productId}`, {
+                const response = await fetch(`/api/carts/${cartId}/products/${productId}`, {
                     method: 'DELETE'
                 });
 
                 if (response.ok) {
-                    // Si la eliminación es exitosa, recarga la página para reflejar los cambios
+                    await updateStock(productId, quantity, 'add'); // Sumar el stock al eliminar
                     location.reload();
-                } else {
-                    // Manejar el error
-                    alert('Error al reducir la cantidad del producto');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Hubo un problema al intentar reducir la cantidad del producto.');
-            }
-        }
-
-         // Capturar el evento de click en el botón de eliminar
-            document.querySelectorAll('.delete-btn').forEach(button => {
-                button.addEventListener('click', async function() {
-                const cartId = this.getAttribute('data-cart-id');
-                const productId = this.getAttribute('data-product-id');
-
-                // Realizar la solicitud DELETE
-                const response = await fetch(`/api/carts/api/carts/${cartId}/products/${productId}`, {
-                    method: 'DELETE'
-                });
-
-                if (response.ok) {
-                    alert('Producto eliminado');
-                    // Recargar la página o actualizar la vista si es necesario
-                    window.location.reload();
                 } else {
                     alert('Error al eliminar el producto');
                 }
-                });
-            });
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Hubo un problema al intentar eliminar el producto.');
+            }
+        }
 
-        // Función para actualizar la cantidad de un producto en el carrito
-        async function updateQuantity(cartId, productId, quantity) {
+        // Capturar el evento de click en el botón de eliminar
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', async function() {
+                const cartId = this.getAttribute('data-cart-id');
+                const productId = this.getAttribute('data-product-id');
+                const cantidad = this.getAttribute('data-cantidad');
+
+                // Eliminar el producto y sumar la cantidad eliminada al stock
+                await removeProduct(cartId, productId, cantidad);
+            });
+        });
+
+        // Función para actualizar la cantidad de un producto en el carrito y modificar el stock
+        async function updateQuantity(cartId, productId, newQuantity, currentQuantity, stock) {
+            const difference = newQuantity - currentQuantity;
+
             try {
-                const response = await fetch(`/api/carts/api/carts/${cartId}/products/${productId}`, {
+                const response = await fetch(`/api/carts/${cartId}/products/${productId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ quantity })
+                    body: JSON.stringify({ quantity: newQuantity })
                 });
 
                 if (response.ok) {
-                    // Si la actualización es exitosa, recarga la página para reflejar los cambios
-                    location.reload();
+                    // Si la cantidad aumenta, resta la diferencia al stock
+                    if (difference > 0) {
+                        await updateStock(productId, difference, 'subtract');
+                    } 
+                    // Si la cantidad disminuye, suma la diferencia al stock
+                    else if (difference < 0) {
+                        await updateStock(productId, Math.abs(difference), 'add');
+                    }
+
+                    location.reload(); // Recargar la página para mostrar los cambios
                 } else {
-                    // Manejar el error
                     alert('Error al actualizar la cantidad del producto');
                 }
             } catch (error) {
                 console.error('Error:', error);
                 alert('Hubo un problema al intentar actualizar la cantidad.');
+            }
+        }
+
+        // Función para actualizar el stock en la base de datos
+        async function updateStock(productId, amount, operation) {
+            try {
+                const response = await fetch(`/api/products/${productId}/stock`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ amount, operation }) // Enviar la cantidad a sumar/restar y la operación (add/subtract)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error al actualizar el stock');
+                }
+            } catch (error) {
+                console.error('Error al actualizar el stock:', error);
             }
         }
     </script>
