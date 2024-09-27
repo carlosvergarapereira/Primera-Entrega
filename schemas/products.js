@@ -8,7 +8,7 @@ const productoSchema = new mongoose.Schema({
     precio: {
         type: Number,
         required: true,
-        min: 1
+        min: 0
     },
     descripcion: String,
     categoria: {
@@ -18,7 +18,7 @@ const productoSchema = new mongoose.Schema({
     stock: {
         type: Number,
         required: true,
-        min: 0  
+        min: 1  
       },
     fechaCreacion: {
         type: Date,
