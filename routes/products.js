@@ -68,12 +68,12 @@ router.get('/view', async (req, res) => {
   }
 });
 
-// Ruta para crear un nuevo producto con validaciones
+// Ruta para crear un nuevo producto con validaciones mejoradas
 router.post(
   '/',
   [
     body('nombre').notEmpty().withMessage('El nombre del producto es obligatorio'),
-    body('precio').isFloat({ gt: 0 }).withMessage('El precio debe ser mayor a 0'), // Aseguramos que el precio sea mayor que 0
+    body('precio').isFloat({ min: 0 }).withMessage('El precio debe ser mayor o igual a 0'),
     body('categoria').notEmpty().withMessage('La categoría es obligatoria'),
     body('stock').isInt({ min: 0 }).withMessage('El stock debe ser un número entero positivo'),
   ],
@@ -106,12 +106,12 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// Ruta para actualizar un producto por ID con validaciones
+// Ruta para actualizar un producto por ID con validaciones mejoradas
 router.put(
   '/:id',
   [
     body('nombre').optional().notEmpty().withMessage('El nombre del producto es obligatorio'),
-    body('precio').optional().isFloat({ gt: 0 }).withMessage('El precio debe ser mayor a 0'), // Validación para precios mayores a 0
+    body('precio').optional().isFloat({ min: 0 }).withMessage('El precio debe ser mayor o igual a 0'),
     body('categoria').optional().notEmpty().withMessage('La categoría es obligatoria'),
     body('stock').optional().isInt({ min: 0 }).withMessage('El stock debe ser un número entero positivo'),
   ],
